@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transport Button Designs — CPG_BEATS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #1a1a1a;
+            color: #ccc;
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 0.12em;
+            color: #E8879A;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            margin-bottom: 50px;
+        }
+
+        .designs {
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .design-card {
+            border: 1px solid #333;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .design-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            background: #222;
+            border-bottom: 1px solid #333;
+        }
+        .design-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            color: #E8879A;
+            letter-spacing: 0.05em;
+            line-height: 1;
+        }
+        .design-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .design-desc {
+            color: #666;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            margin-left: auto;
+        }
+        .design-body {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        .design-variants {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .variant-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            color: #555;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        /* ══════════════════════════════════════
+           DESIGN 1: CLASSIC DECK
+           Mechanical push-buttons like a real cassette deck
+           Deep physical press, rectangular, side-by-side
+           ══════════════════════════════════════ */
+        .deck-housing {
+            background:
+                repeating-linear-gradient(90deg,
+                    rgba(255,255,255,0.02) 0px, transparent 1px, transparent 3px),
+                linear-gradient(180deg, #3a3a3a, #2a2a2a, #333);
+            padding: 20px 28px;
+            border-radius: 4px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 -1px 0 rgba(0,0,0,0.4),
+                0 4px 16px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .deck-label {
+            font-size: 0.55rem;
+            letter-spacing: 0.25em;
+            color: #777;
+            text-transform: uppercase;
+        }
+        .deck-buttons {
+            display: flex;
+            gap: 3px;
+        }
+        .deck-btn {
+            position: relative;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            outline: none;
+        }
+        .deck-btn .btn-shadow {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border-radius: 3px;
+            background: rgba(0,0,0,0.5);
+            transform: translateY(3px);
+            filter: blur(3px);
+        }
+        .deck-btn .btn-edge {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(to bottom, #222, #111);
+        }
+        .deck-btn .btn-face {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 52px;
+            height: 38px;
+            border-radius: 3px;
+            background: linear-gradient(180deg, #555, #444, #3a3a3a);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.15),
+                inset 0 -1px 0 rgba(0,0,0,0.3);
+            transform: translateY(-4px);
+            transition: transform 80ms ease;
+        }
+        .deck-btn:hover .btn-face {
+            background: linear-gradient(180deg, #5f5f5f, #4e4e4e, #444);
+        }
+        .deck-btn:active .btn-face {
+            transform: translateY(-1px);
+            transition: transform 30ms;
+            box-shadow:
+                inset 0 1px 3px rgba(0,0,0,0.4),
+                inset 0 -1px 0 rgba(255,255,255,0.05);
+        }
+        .deck-btn.active .btn-face {
+            transform: translateY(-1px);
+            background: linear-gradient(180deg, #4a4a4a, #3a3a3a, #333);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        /* Icons */
+        .d-icon { display: flex; align-items: center; justify-content: center; }
+        .d-play {
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 7px 0 7px 12px;
+            border-color: transparent transparent transparent #ccc;
+        }
+        .deck-btn:hover .d-play { border-left-color: #fff; }
+        .d-pause { display: flex; gap: 3px; }
+        .d-pause::before, .d-pause::after {
+            content: '';
+            width: 4px; height: 14px;
+            background: #ccc;
+        }
+        .deck-btn:hover .d-pause::before,
+        .deck-btn:hover .d-pause::after { background: #fff; }
+        .d-stop {
+            width: 12px; height: 12px;
+            background: #ccc;
+        }
+        .deck-btn:hover .d-stop { background: #fff; }
+        .d-rew, .d-ffw { display: flex; gap: 1px; }
+        .d-rew::before, .d-rew::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 6px 9px 6px 0;
+            border-color: transparent #ccc transparent transparent;
+        }
+        .deck-btn:hover .d-rew::before,
+        .deck-btn:hover .d-rew::after { border-right-color: #fff; }
+        .d-ffw::before, .d-ffw::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 6px 0 6px 9px;
+            border-color: transparent transparent transparent #ccc;
+        }
+        .deck-btn:hover .d-ffw::before,
+        .deck-btn:hover .d-ffw::after { border-left-color: #fff; }
+        .d-rec {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: #e33;
+            box-shadow: 0 0 4px rgba(255,50,50,0.3);
+        }
+        .deck-btn:hover .d-rec {
+            background: #ff4444;
+            box-shadow: 0 0 8px rgba(255,50,50,0.5);
+        }
+        /* LED */
+        .deck-led-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .deck-led {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #333;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+            border: 1px solid rgba(0,0,0,0.4);
+        }
+        .deck-led.on-green {
+            background: #abff00;
+            box-shadow:
+                rgba(0,0,0,0.2) 0 -1px 4px 1px,
+                #304701 0 -1px 6px inset,
+                rgba(137,255,0,0.4) 0 2px 10px;
+        }
+        .deck-led.on-red {
+            background: #ff3333;
+            box-shadow:
+                rgba(0,0,0,0.2) 0 -1px 4px 1px,
+                #441313 0 -1px 6px inset,
+                rgba(255,0,0,0.4) 0 2px 10px;
+            animation: led-pulse 0.8s infinite;
+        }
+        @keyframes led-pulse {
+            0%, 100% { box-shadow: rgba(0,0,0,0.2) 0 -1px 4px 1px, #441313 0 -1px 6px inset, rgba(255,0,0,0.4) 0 2px 10px; }
+            50% { box-shadow: rgba(0,0,0,0.2) 0 -1px 4px 1px, #441313 0 -1px 6px inset, rgba(255,0,0,0.15) 0 2px 5px; background: #bb2222; }
+        }
+        .deck-led-label {
+            font-size: 7px;
+            letter-spacing: 1px;
+            color: #555;
+        }
+
+        /* ══════════════════════════════════════
+           DESIGN 2: STUDIO CONSOLE
+           Round/pill buttons, mixing desk style
+           Metallic ring bezels, illuminated states
+           ══════════════════════════════════════ */
+        .console-housing {
+            background:
+                linear-gradient(180deg, #2e2e2e, #262626, #2a2a2a);
+            padding: 24px 32px;
+            border-radius: 6px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                0 6px 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .console-section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .console-divider {
+            width: 1px;
+            height: 40px;
+            background: #444;
+            margin: 0 8px;
+        }
+        .con-btn {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            background:
+                radial-gradient(circle at 35% 35%, rgba(255,255,255,0.12), transparent 60%),
+                linear-gradient(180deg, #4a4a4a, #333, #2a2a2a);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow:
+                0 3px 8px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.1),
+                inset 0 -1px 0 rgba(0,0,0,0.3);
+            transition: all 0.1s;
+        }
+        .con-btn:hover {
+            border-color: #777;
+            background:
+                radial-gradient(circle at 35% 35%, rgba(255,255,255,0.18), transparent 60%),
+                linear-gradient(180deg, #555, #3e3e3e, #333);
+        }
+        .con-btn:active {
+            transform: scale(0.95);
+            box-shadow:
+                0 1px 4px rgba(0,0,0,0.5),
+                inset 0 2px 6px rgba(0,0,0,0.5);
+        }
+        .con-btn.active {
+            border-color: #E8879A;
+            box-shadow:
+                0 0 8px rgba(232,135,154,0.3),
+                0 2px 6px rgba(0,0,0,0.4),
+                inset 0 2px 4px rgba(0,0,0,0.4);
+        }
+        .con-btn.active .c-play { border-left-color: #E8879A; }
+        /* Icon reuse via classes */
+        .c-play {
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 6px 0 6px 10px;
+            border-color: transparent transparent transparent #bbb;
+            margin-left: 2px;
+        }
+        .c-pause { display: flex; gap: 3px; }
+        .c-pause::before, .c-pause::after {
+            content: '';
+            width: 3px; height: 12px;
+            background: #bbb;
+        }
+        .c-stop {
+            width: 10px; height: 10px;
+            background: #bbb;
+        }
+        .c-rew, .c-ffw { display: flex; gap: 0; }
+        .c-rew::before, .c-rew::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 5px 8px 5px 0;
+            border-color: transparent #bbb transparent transparent;
+        }
+        .c-ffw::before, .c-ffw::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent #bbb;
+        }
+        .c-rec {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #c33;
+        }
+        .con-btn:hover .c-rec { background: #e44; }
+        /* Console LEDs */
+        .con-led-strip {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-left: 4px;
+        }
+        .con-led {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .con-led-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #333;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .con-led-dot.glow-amber {
+            background: #f0c040;
+            box-shadow: 0 0 6px rgba(240,192,64,0.5), inset 0 -1px 3px rgba(0,0,0,0.3);
+        }
+        .con-led-dot.glow-red {
+            background: #ff4444;
+            box-shadow: 0 0 6px rgba(255,68,68,0.5), inset 0 -1px 3px rgba(0,0,0,0.3);
+        }
+        .con-led-text {
+            font-size: 7px;
+            letter-spacing: 1.5px;
+            color: #555;
+        }
+
+        /* ══════════════════════════════════════
+           DESIGN 3: WALKMAN MINIMAL
+           Flat, compact, subtle shadows
+           Thin-line icons, modern-retro crossover
+           ══════════════════════════════════════ */
+        .walkman-housing {
+            background: #e8e4df;
+            padding: 18px 24px;
+            border-radius: 8px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.8),
+                inset 0 -1px 0 rgba(0,0,0,0.08),
+                0 4px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .wm-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        .wm-btn {
+            width: 42px; height: 32px;
+            border: 1.5px solid #b5b1ac;
+            background: #f5f2ee;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 2px 0 #c9c5c0,
+                0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.08s;
+        }
+        .wm-btn:hover {
+            border-color: #E8879A;
+            box-shadow:
+                0 2px 0 #c9c5c0,
+                0 3px 8px rgba(232,135,154,0.15);
+        }
+        .wm-btn:active {
+            box-shadow: 0 0 0 #c9c5c0;
+            transform: translateY(2px);
+        }
+        .wm-btn.active {
+            background: #E8879A;
+            border-color: #d4758a;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+            transform: translateY(2px);
+        }
+        .wm-btn.active .w-play { border-left-color: #fff; }
+        .wm-btn.active .w-pause::before,
+        .wm-btn.active .w-pause::after { background: #fff; }
+        .wm-btn.active .w-stop { background: #fff; }
+        /* Icons */
+        .w-play {
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 5px 0 5px 9px;
+            border-color: transparent transparent transparent #666;
+            margin-left: 1px;
+        }
+        .w-pause { display: flex; gap: 2px; }
+        .w-pause::before, .w-pause::after {
+            content: '';
+            width: 3px; height: 10px;
+            background: #666;
+        }
+        .w-stop {
+            width: 9px; height: 9px;
+            background: #666;
+        }
+        .w-rew, .w-ffw { display: flex; gap: 0; }
+        .w-rew::before, .w-rew::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 5px 7px 5px 0;
+            border-color: transparent #666 transparent transparent;
+        }
+        .w-ffw::before, .w-ffw::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 5px 0 5px 7px;
+            border-color: transparent transparent transparent #666;
+        }
+        .wm-divider {
+            width: 1px; height: 20px;
+            background: #c9c5c0;
+        }
+        .wm-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            color: #b5b1ac;
+        }
+        .wm-counter {
+            font-size: 0.75rem;
+            color: #888;
+            font-variant-numeric: tabular-nums;
+            background: #ddd;
+            padding: 4px 10px;
+            border-radius: 3px;
+            border: 1px solid #c5c0bb;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* ══════════════════════════════════════
+           DESIGN 4: HI-FI RACK
+           Brushed metal, professional, LED bar indicators
+           Wide buttons with engraved labels
+           ══════════════════════════════════════ */
+        .hifi-housing {
+            background:
+                repeating-linear-gradient(90deg,
+                    rgba(255,255,255,0.03) 0px, transparent 1px, transparent 3px),
+                repeating-linear-gradient(90deg,
+                    rgba(0,0,0,0.02) 0px, transparent 1px, transparent 5px),
+                linear-gradient(180deg, #c0c0c0, #a8a8a8, #b4b4b4, #9a9a9a);
+            padding: 16px 28px;
+            border-radius: 3px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.5),
+                inset 0 -1px 0 rgba(0,0,0,0.2),
+                0 4px 16px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .hifi-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            color: #444;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+            margin-right: 8px;
+        }
+        .hifi-buttons {
+            display: flex;
+            gap: 4px;
+        }
+        .hifi-btn {
+            border: none;
+            cursor: pointer;
+            padding: 8px 14px;
+            background:
+                radial-gradient(90% 7% at 50% 8%, rgba(255,255,255,0.4) 25%, transparent 50%),
+                linear-gradient(180deg, #666, #4a4a4a, #3a3a3a);
+            border-radius: 3px;
+            box-shadow:
+                0.15em 0.15em 0.4em rgba(0,0,0,0.45),
+                0 -0.08em 0 0.08em rgba(0,0,0,0.2),
+                0 0.08em 0 0.08em rgba(255,255,255,0.2),
+                -0.1em 0 0.15em rgba(0,0,0,0.2) inset,
+                0 0.15em 0.15em rgba(255,255,255,0.2) inset,
+                0.1em 0 0.15em rgba(255,255,255,0.15) inset,
+                0 -0.15em 0.15em rgba(0,0,0,0.2) inset;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: box-shadow 0.08s, transform 0.08s;
+            min-width: 52px;
+        }
+        .hifi-btn:active {
+            box-shadow:
+                0 0 0.1em rgba(0,0,0,0.45),
+                0 -0.08em 0 0.08em rgba(0,0,0,0.2),
+                0 0.08em 0 0.08em rgba(255,255,255,0.2),
+                -0.15em 0 0.2em rgba(0,0,0,0.4) inset,
+                0 0.2em 0.2em rgba(0,0,0,0.25) inset,
+                0.15em 0 0.2em rgba(0,0,0,0.2) inset,
+                0 -0.2em 0.2em rgba(0,0,0,0.4) inset;
+            transform: translateY(1px);
+        }
+        .hifi-btn.active {
+            box-shadow:
+                0 0 0.1em rgba(0,0,0,0.45),
+                0 -0.08em 0 0.08em rgba(0,0,0,0.2),
+                0 0.08em 0 0.08em rgba(255,255,255,0.2),
+                -0.15em 0 0.2em rgba(0,0,0,0.4) inset,
+                0 0.2em 0.2em rgba(0,0,0,0.25) inset,
+                0.15em 0 0.2em rgba(0,0,0,0.2) inset,
+                0 -0.2em 0.2em rgba(0,0,0,0.4) inset;
+        }
+        .hifi-btn-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 6px;
+            letter-spacing: 1.5px;
+            color: #aaa;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+            text-transform: uppercase;
+        }
+        /* Icons */
+        .h-play {
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 6px 0 6px 10px;
+            border-color: transparent transparent transparent #ccc;
+        }
+        .h-pause { display: flex; gap: 2px; }
+        .h-pause::before, .h-pause::after {
+            content: '';
+            width: 3px; height: 12px;
+            background: #ccc;
+        }
+        .h-stop {
+            width: 10px; height: 10px;
+            background: #ccc;
+        }
+        .h-rew, .h-ffw { display: flex; gap: 0; }
+        .h-rew::before, .h-rew::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 5px 8px 5px 0;
+            border-color: transparent #ccc transparent transparent;
+        }
+        .h-ffw::before, .h-ffw::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent #ccc;
+        }
+        .h-rec {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #c33;
+        }
+        /* HiFi LED strip */
+        .hifi-led-strip {
+            display: flex;
+            gap: 3px;
+            margin-left: auto;
+        }
+        .hifi-led-seg {
+            width: 4px; height: 16px;
+            border-radius: 1px;
+            background: #444;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+        }
+        .hifi-led-seg.lit-green {
+            background: #4caf50;
+            box-shadow: 0 0 4px rgba(76,175,80,0.5);
+        }
+        .hifi-led-seg.lit-yellow {
+            background: #f0c040;
+            box-shadow: 0 0 4px rgba(240,192,64,0.5);
+        }
+        .hifi-led-seg.lit-red {
+            background: #f44;
+            box-shadow: 0 0 4px rgba(255,68,68,0.5);
+        }
+        .hifi-level-label {
+            font-size: 7px;
+            letter-spacing: 1px;
+            color: #444;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+
+        /* ══════════════════════════════════════
+           DESIGN 5: WARM WALNUT DECK
+           Dark wood panel, amber LEDs, gold accents
+           Matches walnut theme specifically
+           ══════════════════════════════════════ */
+        .walnut-housing {
+            background:
+                repeating-linear-gradient(180deg,
+                    rgba(255,255,255,0.015) 0px, transparent 2px, transparent 8px),
+                linear-gradient(180deg, #3a2a1e, #2a1e14, #332518);
+            padding: 20px 28px;
+            border-radius: 4px;
+            border: 1px solid #5c3a1e;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.04),
+                inset 0 -1px 0 rgba(0,0,0,0.4),
+                0 6px 20px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .wal-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .wal-btn {
+            position: relative;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            outline: none;
+        }
+        .wal-btn .wal-shadow {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.6);
+            transform: translateY(3px);
+            filter: blur(4px);
+        }
+        .wal-btn .wal-edge {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(180deg, #1a1008, #0e0904);
+        }
+        .wal-btn .wal-face {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 48px;
+            height: 36px;
+            border-radius: 4px;
+            background:
+                radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.06) 0%, transparent 60%),
+                linear-gradient(180deg, #5c4a3a, #4a3a2a, #3e2e20);
+            border: 1px solid rgba(255,255,255,0.05);
+            transform: translateY(-5px);
+            transition: transform 100ms cubic-bezier(.3,.7,.4,1);
+        }
+        .wal-btn:hover .wal-face {
+            background:
+                radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.1) 0%, transparent 60%),
+                linear-gradient(180deg, #6a584a, #5a4a3a, #4e3e30);
+            transform: translateY(-6px);
+            transition: transform 200ms cubic-bezier(.3,.7,.4,1.5);
+        }
+        .wal-btn:active .wal-face {
+            transform: translateY(-2px);
+            transition: transform 30ms;
+        }
+        .wal-btn.active .wal-face {
+            transform: translateY(-2px);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        /* Walnut icons — amber tones */
+        .wa-play {
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 6px 0 6px 10px;
+            border-color: transparent transparent transparent #c9b2a3;
+        }
+        .wal-btn.active .wa-play { border-left-color: #f0c040; }
+        .wa-pause { display: flex; gap: 3px; }
+        .wa-pause::before, .wa-pause::after {
+            content: '';
+            width: 3px; height: 12px;
+            background: #c9b2a3;
+        }
+        .wa-stop {
+            width: 10px; height: 10px;
+            background: #c9b2a3;
+        }
+        .wa-rew, .wa-ffw { display: flex; gap: 0; }
+        .wa-rew::before, .wa-rew::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 5px 8px 5px 0;
+            border-color: transparent #c9b2a3 transparent transparent;
+        }
+        .wa-ffw::before, .wa-ffw::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent #c9b2a3;
+        }
+        .wa-rec {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #d44a2e;
+        }
+        /* Walnut LED */
+        .wal-led {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #2a1e14;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.6);
+            border: 1px solid rgba(0,0,0,0.5);
+        }
+        .wal-led.on-amber {
+            background: #f0c040;
+            box-shadow:
+                0 0 6px rgba(240,192,64,0.5),
+                0 0 14px rgba(240,192,64,0.2),
+                inset 0 -1px 3px rgba(0,0,0,0.3);
+        }
+        .wal-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            color: #6a5f55;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.6);
+        }
+        .wal-engrave {
+            font-size: 0.5rem;
+            letter-spacing: 0.2em;
+            color: #5a4a3a;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+        }
+
+        /* ══════════════════════════════════════
+           DESIGN 6: NEVE / CREAM FACEPLATE
+           Warm cream background, chunky colored buttons
+           API/Neve console inspired
+           ══════════════════════════════════════ */
+        .neve-housing {
+            background:
+                linear-gradient(180deg,
+                    rgba(255,255,255,0.15) 0%,
+                    transparent 40%,
+                    rgba(0,0,0,0.04) 100%),
+                #f0dcc8;
+            padding: 20px 28px;
+            border-radius: 4px;
+            border: 1px solid #a87e62;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.5),
+                inset 0 -1px 0 rgba(0,0,0,0.1),
+                0 4px 14px rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .neve-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 0.15em;
+            color: #6b4525;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+        }
+        .neve-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        .neve-btn {
+            width: 44px; height: 34px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            box-shadow:
+                0 3px 0 rgba(0,0,0,0.2),
+                0 4px 8px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            transition: all 0.08s;
+            position: relative;
+        }
+        .neve-btn:active {
+            box-shadow:
+                0 1px 0 rgba(0,0,0,0.2),
+                inset 0 1px 3px rgba(0,0,0,0.2);
+            transform: translateY(2px);
+        }
+        .neve-btn.active {
+            box-shadow:
+                0 0 0 rgba(0,0,0,0.2),
+                inset 0 2px 4px rgba(0,0,0,0.3);
+            transform: translateY(3px);
+        }
+        /* Button colors — Neve palette */
+        .neve-btn.nb-gray {
+            background: linear-gradient(180deg, #8a8a8a, #6a6a6a, #5e5e5e);
+        }
+        .neve-btn.nb-red {
+            background: linear-gradient(180deg, #d44a2e, #b83d24, #a33520);
+        }
+        .neve-btn.nb-red .n-icon { filter: brightness(2); }
+        .neve-btn.nb-green {
+            background: linear-gradient(180deg, #5a8a50, #4a7a42, #3e6a38);
+        }
+        .neve-btn.nb-blue {
+            background: linear-gradient(180deg, #4a7a9a, #3a6a8a, #305a7a);
+        }
+        /* Neve icons */
+        .n-play {
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent #e8d8c8;
+        }
+        .n-pause { display: flex; gap: 2px; }
+        .n-pause::before, .n-pause::after {
+            content: '';
+            width: 3px; height: 10px;
+            background: #e8d8c8;
+        }
+        .n-stop {
+            width: 8px; height: 8px;
+            background: #e8d8c8;
+        }
+        .n-rew, .n-ffw { display: flex; gap: 0; }
+        .n-rew::before, .n-rew::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 4px 6px 4px 0;
+            border-color: transparent #e8d8c8 transparent transparent;
+        }
+        .n-ffw::before, .n-ffw::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 4px 0 4px 6px;
+            border-color: transparent transparent transparent #e8d8c8;
+        }
+        .n-rec {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #faa;
+        }
+        .neve-screw {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #bbb, #666);
+            box-shadow: inset 0 -1px 1px rgba(0,0,0,0.3);
+        }
+        .neve-counter {
+            font-size: 0.8rem;
+            color: #3a2317;
+            background: #e4d0bc;
+            padding: 5px 12px;
+            border-radius: 3px;
+            border: 1px solid #b8956e;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ══════════════════════════════════════
+           Interaction demo script
+           ══════════════════════════════════════ */
+        .note {
+            text-align: center;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            color: #555;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>TRANSPORT CONTROLS</h1>
+    <p class="subtitle">DESIGN VARIATIONS &middot; CPG_BEATS &middot; 2026</p>
+
+    <div class="designs">
+
+        <!-- ═══ DESIGN 1: CLASSIC DECK ═══ -->
+        <div class="design-card">
+            <div class="design-header">
+                <span class="design-num">01</span>
+                <span class="design-name">CLASSIC DECK</span>
+                <span class="design-desc">MECHANICAL PUSH BUTTONS &middot; 3-LAYER DEPTH</span>
+            </div>
+            <div class="design-body" style="background: #1a1a1a;">
+                <div class="deck-housing">
+                    <div class="deck-led-group">
+                        <div class="deck-led on-green"></div>
+                        <span class="deck-led-label">PWR</span>
+                    </div>
+                    <div class="deck-buttons">
+                        <button class="deck-btn" data-group="deck">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-rew"></span></span>
+                        </button>
+                        <button class="deck-btn active" data-group="deck">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-play"></span></span>
+                        </button>
+                        <button class="deck-btn" data-group="deck">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-pause"></span></span>
+                        </button>
+                        <button class="deck-btn" data-group="deck">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-stop"></span></span>
+                        </button>
+                        <button class="deck-btn" data-group="deck">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-ffw"></span></span>
+                        </button>
+                        <button class="deck-btn" data-group="deck">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-rec"></span></span>
+                        </button>
+                    </div>
+                    <div class="deck-led-group">
+                        <div class="deck-led on-red"></div>
+                        <span class="deck-led-label">REC</span>
+                    </div>
+                </div>
+                <span class="variant-label">DARK METAL CHASSIS &middot; PHYSICAL PRESS DEPTH &middot; LED STATUS</span>
+            </div>
+        </div>
+
+        <!-- ═══ DESIGN 2: STUDIO CONSOLE ═══ -->
+        <div class="design-card">
+            <div class="design-header">
+                <span class="design-num">02</span>
+                <span class="design-name">STUDIO CONSOLE</span>
+                <span class="design-desc">ROUND BUTTONS &middot; MIXING DESK STYLE</span>
+            </div>
+            <div class="design-body" style="background: #151515;">
+                <div class="console-housing">
+                    <div class="console-section">
+                        <button class="con-btn" data-group="console"><span class="c-rew"></span></button>
+                        <button class="con-btn active" data-group="console"><span class="c-play"></span></button>
+                        <button class="con-btn" data-group="console"><span class="c-pause"></span></button>
+                    </div>
+                    <div class="console-divider"></div>
+                    <div class="console-section">
+                        <button class="con-btn" data-group="console"><span class="c-stop"></span></button>
+                        <button class="con-btn" data-group="console"><span class="c-ffw"></span></button>
+                        <button class="con-btn" data-group="console"><span class="c-rec"></span></button>
+                    </div>
+                    <div class="console-divider"></div>
+                    <div class="con-led-strip">
+                        <div class="con-led">
+                            <div class="con-led-dot glow-amber"></div>
+                            <span class="con-led-text">PLAY</span>
+                        </div>
+                        <div class="con-led">
+                            <div class="con-led-dot glow-red"></div>
+                            <span class="con-led-text">REC</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="variant-label">CIRCULAR METALLIC BEZELS &middot; ACCENT RING ON ACTIVE &middot; GROUPED SECTIONS</span>
+            </div>
+        </div>
+
+        <!-- ═══ DESIGN 3: WALKMAN MINIMAL ═══ -->
+        <div class="design-card">
+            <div class="design-header">
+                <span class="design-num">03</span>
+                <span class="design-name">WALKMAN MINIMAL</span>
+                <span class="design-desc">FLAT &middot; COMPACT &middot; MODERN-RETRO</span>
+            </div>
+            <div class="design-body" style="background: #d5d1cc;">
+                <div class="walkman-housing">
+                    <span class="wm-brand">CPG</span>
+                    <div class="wm-divider"></div>
+                    <div class="wm-buttons">
+                        <button class="wm-btn" data-group="walkman"><span class="w-rew"></span></button>
+                        <button class="wm-btn active" data-group="walkman"><span class="w-play"></span></button>
+                        <button class="wm-btn" data-group="walkman"><span class="w-pause"></span></button>
+                        <button class="wm-btn" data-group="walkman"><span class="w-stop"></span></button>
+                        <button class="wm-btn" data-group="walkman"><span class="w-ffw"></span></button>
+                    </div>
+                    <div class="wm-divider"></div>
+                    <div class="wm-counter">03:42</div>
+                </div>
+                <span class="variant-label" style="color: #888;">LIGHT CHASSIS &middot; PASST ZUM MINIMAL THEME &middot; CLEAN PRESS FEEL</span>
+            </div>
+        </div>
+
+        <!-- ═══ DESIGN 4: HI-FI RACK ═══ -->
+        <div class="design-card">
+            <div class="design-header">
+                <span class="design-num">04</span>
+                <span class="design-name">HI-FI RACK</span>
+                <span class="design-desc">BRUSHED METAL &middot; MULTI-SHADOW BEVEL</span>
+            </div>
+            <div class="design-body" style="background: #2a2a2e;">
+                <div class="hifi-housing">
+                    <span class="hifi-brand">CPG_BEATS</span>
+                    <div class="hifi-buttons">
+                        <button class="hifi-btn" data-group="hifi">
+                            <span class="h-rew"></span>
+                            <span class="hifi-btn-label">REW</span>
+                        </button>
+                        <button class="hifi-btn active" data-group="hifi">
+                            <span class="h-play"></span>
+                            <span class="hifi-btn-label">PLAY</span>
+                        </button>
+                        <button class="hifi-btn" data-group="hifi">
+                            <span class="h-pause"></span>
+                            <span class="hifi-btn-label">PAUSE</span>
+                        </button>
+                        <button class="hifi-btn" data-group="hifi">
+                            <span class="h-stop"></span>
+                            <span class="hifi-btn-label">STOP</span>
+                        </button>
+                        <button class="hifi-btn" data-group="hifi">
+                            <span class="h-ffw"></span>
+                            <span class="hifi-btn-label">F.FWD</span>
+                        </button>
+                        <button class="hifi-btn" data-group="hifi">
+                            <span class="h-rec"></span>
+                            <span class="hifi-btn-label">REC</span>
+                        </button>
+                    </div>
+                    <span class="hifi-level-label">LEVEL</span>
+                    <div class="hifi-led-strip">
+                        <div class="hifi-led-seg lit-green"></div>
+                        <div class="hifi-led-seg lit-green"></div>
+                        <div class="hifi-led-seg lit-green"></div>
+                        <div class="hifi-led-seg lit-green"></div>
+                        <div class="hifi-led-seg lit-yellow"></div>
+                        <div class="hifi-led-seg lit-yellow"></div>
+                        <div class="hifi-led-seg"></div>
+                        <div class="hifi-led-seg"></div>
+                        <div class="hifi-led-seg"></div>
+                        <div class="hifi-led-seg"></div>
+                    </div>
+                </div>
+                <span class="variant-label">BRUSHED ALUMINIUM &middot; ENGRAVED LABELS &middot; LED LEVEL METER</span>
+            </div>
+        </div>
+
+        <!-- ═══ DESIGN 5: WARM WALNUT ═══ -->
+        <div class="design-card">
+            <div class="design-header">
+                <span class="design-num">05</span>
+                <span class="design-name">WARM WALNUT DECK</span>
+                <span class="design-desc">DARK WOOD &middot; AMBER GLOW &middot; MATCHED TO WALNUT THEME</span>
+            </div>
+            <div class="design-body" style="background: #1c1917;">
+                <div class="walnut-housing">
+                    <div class="deck-led-group">
+                        <div class="wal-led on-amber"></div>
+                        <span class="deck-led-label" style="color: #5a4a3a;">PLAY</span>
+                    </div>
+                    <div class="wal-buttons">
+                        <button class="wal-btn" data-group="walnut">
+                            <span class="wal-shadow"></span>
+                            <span class="wal-edge"></span>
+                            <span class="wal-face"><span class="d-icon wa-rew"></span></span>
+                        </button>
+                        <button class="wal-btn active" data-group="walnut">
+                            <span class="wal-shadow"></span>
+                            <span class="wal-edge"></span>
+                            <span class="wal-face"><span class="d-icon wa-play"></span></span>
+                        </button>
+                        <button class="wal-btn" data-group="walnut">
+                            <span class="wal-shadow"></span>
+                            <span class="wal-edge"></span>
+                            <span class="wal-face"><span class="d-icon wa-pause"></span></span>
+                        </button>
+                        <button class="wal-btn" data-group="walnut">
+                            <span class="wal-shadow"></span>
+                            <span class="wal-edge"></span>
+                            <span class="wal-face"><span class="d-icon wa-stop"></span></span>
+                        </button>
+                        <button class="wal-btn" data-group="walnut">
+                            <span class="wal-shadow"></span>
+                            <span class="wal-edge"></span>
+                            <span class="wal-face"><span class="d-icon wa-ffw"></span></span>
+                        </button>
+                        <button class="wal-btn" data-group="walnut">
+                            <span class="wal-shadow"></span>
+                            <span class="wal-edge"></span>
+                            <span class="wal-face"><span class="d-icon wa-rec"></span></span>
+                        </button>
+                    </div>
+                    <span class="wal-label">TRANSPORT</span>
+                </div>
+                <span class="variant-label">WOOD-GRAIN PANEL &middot; AMBER STATUS LED &middot; LEATHER-TONE BUTTONS</span>
+            </div>
+        </div>
+
+        <!-- ═══ DESIGN 6: NEVE / CREAM ═══ -->
+        <div class="design-card">
+            <div class="design-header">
+                <span class="design-num">06</span>
+                <span class="design-name">NEVE CONSOLE</span>
+                <span class="design-desc">CREAM FACEPLATE &middot; COLORED BUTTONS &middot; MATCHED TO CREAM THEME</span>
+            </div>
+            <div class="design-body" style="background: #c9b2a3;">
+                <div class="neve-housing">
+                    <span class="neve-label">TRANSPORT</span>
+                    <div class="neve-screw"></div>
+                    <div class="neve-buttons">
+                        <button class="neve-btn nb-gray" data-group="neve"><span class="n-rew"></span></button>
+                        <button class="neve-btn nb-green active" data-group="neve"><span class="n-play"></span></button>
+                        <button class="neve-btn nb-blue" data-group="neve"><span class="n-pause"></span></button>
+                        <button class="neve-btn nb-gray" data-group="neve"><span class="n-stop"></span></button>
+                        <button class="neve-btn nb-gray" data-group="neve"><span class="n-ffw"></span></button>
+                        <button class="neve-btn nb-red" data-group="neve"><span class="n-rec"></span></button>
+                    </div>
+                    <div class="neve-screw"></div>
+                    <div class="neve-counter">03:42</div>
+                </div>
+                <span class="variant-label" style="color: #7a6050;">NEVE/API INSPIRIERT &middot; FARBCODIERTE FUNKTIONEN &middot; CHUNKY FEEL</span>
+            </div>
+        </div>
+    </div>
+
+    <p class="note">KLICK AUF BUTTONS ZUM TESTEN DES PRESS-FEELINGS &middot; ALLE DESIGNS SIND PURE CSS</p>
+
+    <script>
+        // Simple toggle interaction for demo
+        document.querySelectorAll('[data-group]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const group = btn.dataset.group;
+                document.querySelectorAll(`[data-group="${group}"]`).forEach(b => {
+                    b.classList.remove('active');
+                });
+                btn.classList.add('active');
+            });
+        });
+    </script>
+
+</body>
+</html>

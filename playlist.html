@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CPG_BEATS — PLAYLIST</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #1c1917;
+            --panel: #2a2520;
+            --border: #4a423a;
+            --text: #e4d9d1;
+            --dim: #a89a8c;
+            --beat-color: #E8879A;
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+        html, body {
+            height: 100%; height: 100dvh; overflow: hidden;
+            background: var(--bg); color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Screens ── */
+        .screen {
+            position: fixed; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.4s;
+        }
+        .screen.hidden { display: none; }
+
+        /* ══════════════════════════════════════
+           ENVELOPE SCREEN
+           ══════════════════════════════════════ */
+        #envelopeScreen { cursor: pointer; }
+        .envelope-content { text-align: center; }
+        .envelope-wrap {
+            position: relative;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+        .envelope-svg { color: var(--dim); }
+        .notif-badge {
+            position: absolute;
+            top: -8px; right: -12px;
+            background: var(--beat-color);
+            color: #fff;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 16px var(--beat-color), 0 2px 8px rgba(0,0,0,0.5);
+            animation: pulse-badge 2s ease-in-out infinite;
+        }
+        .envelope-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 0.08em;
+            color: var(--text);
+            margin-top: 28px;
+        }
+        .envelope-sub {
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            color: var(--dim);
+            margin-top: 6px;
+        }
+        .envelope-hint {
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            color: var(--border);
+            margin-top: 32px;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        #envelopeScreen.exit .envelope-content {
+            animation: envelope-fly 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* ══════════════════════════════════════
+           INSTRUCTION SCREEN
+           ══════════════════════════════════════ */
+        .instruct-content {
+            text-align: center;
+            padding: 20px;
+            max-width: 400px;
+        }
+        .instruct-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 32px;
+            color: var(--text);
+        }
+        .instruct-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .instruct-card {
+            background: var(--panel);
+            border: 2px solid var(--border);
+            padding: 24px 20px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                inset 0 -1px 0 rgba(0,0,0,0.3),
+                0 2px 8px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fade-up 0.5s ease-out forwards;
+        }
+        .instruct-card:nth-child(2) { animation-delay: 0.2s; }
+        .instruct-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .instruct-icon svg { color: var(--dim); }
+        .instruct-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--text);
+        }
+        .instruct-desc {
+            font-size: 10px;
+            color: var(--dim);
+            letter-spacing: 0.08em;
+            margin-top: 4px;
+        }
+        .btn-go {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 0.15em;
+            color: #fff;
+            background: var(--beat-color);
+            border: none;
+            padding: 14px 60px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            opacity: 0;
+            animation: fade-up 0.5s ease-out 0.5s forwards;
+        }
+        .btn-go:hover { filter: brightness(1.1); }
+        .btn-go:active { transform: scale(0.97); }
+
+        /* ══════════════════════════════════════
+           PLAYER SCREEN
+           ══════════════════════════════════════ */
+        #playerScreen {
+            flex-direction: column;
+            padding: 20px;
+            gap: 0;
+        }
+        .player-wrap {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+            max-height: 700px;
+            justify-content: center;
+        }
+
+        /* Header */
+        .player-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+            flex-shrink: 0;
+        }
+        .pl-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.12em;
+        }
+        .pl-spacer { flex: 1; }
+        .pl-tag {
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            color: var(--dim);
+        }
+
+        /* Beat Overview */
+        .beat-overview {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 0;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+        .beat-dot {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            border: 2px solid var(--dot-color);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            background: transparent;
+        }
+        .beat-dot:hover { transform: scale(1.15); }
+        .beat-dot.active {
+            transform: scale(1.25);
+            box-shadow: 0 0 16px var(--dot-color);
+            border-width: 3px;
+        }
+        .beat-dot.rated-up {
+            background: var(--dot-color);
+        }
+        .beat-dot.rated-down {
+            background: var(--dot-color);
+            opacity: 0.35;
+        }
+        .dot-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 13px;
+            color: var(--dot-color);
+            line-height: 1;
+        }
+        .beat-dot.rated-up .dot-num { color: var(--bg); }
+        .beat-dot.rated-down .dot-num { color: var(--bg); }
+
+        /* Now Playing */
+        .now-playing {
+            text-align: center;
+            padding: 20px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+            transition: opacity 0.2s;
+        }
+        .now-playing.switching { opacity: 0; }
+        .np-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.5rem;
+            color: var(--beat-color);
+            line-height: 1;
+            transition: color 0.4s;
+        }
+        .np-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 0.08em;
+            color: var(--text);
+            margin-top: 4px;
+            line-height: 1.1;
+        }
+        .np-meta {
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            color: var(--dim);
+            margin-top: 8px;
+        }
+        .np-rating-hint {
+            font-size: 9px;
+            letter-spacing: 0.15em;
+            color: var(--border);
+            margin-top: 16px;
+            transition: opacity 0.3s;
+        }
+
+        /* Progress */
+        .progress-section {
+            flex-shrink: 0;
+            padding: 0 4px;
+        }
+        .progress-bar {
+            height: 5px;
+            background: var(--border);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--beat-color);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.15s linear, background 0.4s;
+        }
+        .time-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--dim);
+            letter-spacing: 0.05em;
+            font-variant-numeric: tabular-nums;
+            margin-top: 6px;
+        }
+
+        /* ══════════════════════════════════════
+           TRANSPORT DECK (Cassette Style)
+           ══════════════════════════════════════ */
+        .deck-housing {
+            background:
+                repeating-linear-gradient(90deg,
+                    rgba(255,255,255,0.02) 0px, transparent 1px, transparent 3px),
+                linear-gradient(180deg, #3a2a1e, #2a1e14, #332518);
+            padding: 14px 16px;
+            border-radius: 3px;
+            border: 1px solid #5c3a1e;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 -1px 0 rgba(0,0,0,0.4),
+                0 3px 12px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .deck-buttons {
+            display: flex;
+            gap: 3px;
+        }
+        .deck-btn {
+            position: relative;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-shadow {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border-radius: 3px;
+            background: rgba(0,0,0,0.5);
+            transform: translateY(3px);
+            filter: blur(3px);
+            transition: transform 80ms;
+        }
+        .btn-edge {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(180deg, #1a1008, #0e0904);
+        }
+        .btn-face {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 48px; height: 36px;
+            border-radius: 3px;
+            background: linear-gradient(180deg, #5c4a3a, #4a3a2a, #3e2e20);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.15),
+                inset 0 -1px 0 rgba(0,0,0,0.3);
+            transform: translateY(-4px);
+            transition: transform 80ms ease, background 0.15s;
+            color: #c9b2a3;
+        }
+        .deck-btn:hover .btn-face {
+            background: linear-gradient(180deg, #6a584a, #5a4a3a, #4e3e30);
+        }
+        .deck-btn:active .btn-face {
+            transform: translateY(-1px);
+            transition: transform 30ms;
+            box-shadow:
+                inset 0 1px 3px rgba(0,0,0,0.4),
+                inset 0 -1px 0 rgba(255,255,255,0.05);
+        }
+        .deck-btn:active .btn-shadow {
+            transform: translateY(1px);
+            filter: blur(1px);
+        }
+
+        /* Thumb button active states */
+        .deck-btn.rated-up .btn-face {
+            background: linear-gradient(180deg, #3a5a3a, #2a4a2a, #1e3e1e);
+            color: #90ee90;
+        }
+        .deck-btn.rated-down .btn-face {
+            background: linear-gradient(180deg, #5a3a3a, #4a2a2a, #3e1e1e);
+            color: #ff9090;
+        }
+
+        /* Deck button labels */
+        .deck-btn-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .deck-btn-label {
+            font-size: 7px;
+            letter-spacing: 1px;
+            color: #5a4a3a;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        .deck-btn.rated-up ~ .deck-btn-label { color: #90ee90; }
+        .deck-btn.rated-down ~ .deck-btn-label { color: #ff9090; }
+
+        /* Transport icons */
+        .d-icon { display: flex; align-items: center; justify-content: center; }
+        .d-play {
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 7px 0 7px 12px;
+            border-color: transparent transparent transparent currentColor;
+            margin-left: 2px;
+        }
+        .d-play.is-paused {
+            border: none;
+            width: auto; height: auto;
+            display: flex; gap: 3px;
+        }
+        .d-play.is-paused::before,
+        .d-play.is-paused::after {
+            content: '';
+            width: 4px; height: 14px;
+            background: currentColor;
+        }
+        .d-rew, .d-ffw { display: flex; gap: 1px; }
+        .d-rew::before, .d-rew::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 6px 9px 6px 0;
+            border-color: transparent currentColor transparent transparent;
+        }
+        .d-ffw::before, .d-ffw::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 6px 0 6px 9px;
+            border-color: transparent transparent transparent currentColor;
+        }
+
+        /* LEDs */
+        .deck-led-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .deck-led {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #2a1e14;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+            border: 1px solid rgba(0,0,0,0.4);
+            transition: all 0.3s;
+        }
+        .deck-led.on {
+            background: var(--beat-color);
+            box-shadow: 0 0 4px var(--beat-color), 0 0 10px var(--beat-color),
+                        inset 0 -1px 2px rgba(0,0,0,0.3);
+        }
+        .deck-led.blink { animation: led-blink 0.6s infinite; }
+        .deck-led-label {
+            font-size: 7px;
+            letter-spacing: 1px;
+            color: #5a4a3a;
+            text-transform: uppercase;
+        }
+
+        /* Tape counter */
+        .deck-counter {
+            margin-left: auto;
+            background: #1a1008;
+            border: 1px solid #3a2a1e;
+            border-radius: 3px;
+            padding: 4px 10px;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .deck-counter-display {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--beat-color);
+            letter-spacing: 0.15em;
+            text-shadow: 0 0 6px var(--beat-color);
+            font-variant-numeric: tabular-nums;
+            transition: color 0.4s, text-shadow 0.4s;
+        }
+
+        /* ══════════════════════════════════════
+           FEEDBACK SCREEN
+           ══════════════════════════════════════ */
+        .feedback-content {
+            text-align: center;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+        }
+        .feedback-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 0.08em;
+            color: var(--beat-color);
+            margin-bottom: 8px;
+        }
+        .feedback-sub {
+            font-size: 11px;
+            color: var(--dim);
+            letter-spacing: 0.05em;
+            margin-bottom: 24px;
+        }
+        .feedback-area {
+            width: 100%;
+            padding: 14px;
+            font-family: 'Space Mono', monospace;
+            font-size: 16px;
+            background: var(--panel);
+            color: var(--text);
+            border: 2px solid var(--border);
+            outline: none;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.2s;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .feedback-area:focus { border-color: var(--beat-color); }
+        .feedback-area::placeholder { color: var(--border); }
+        .btn-submit {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.15em;
+            color: #fff;
+            background: var(--beat-color);
+            border: none;
+            padding: 12px 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: filter 0.2s, transform 0.1s;
+        }
+        .btn-submit:hover { filter: brightness(1.1); }
+        .btn-submit:active { transform: scale(0.97); }
+        .btn-submit:disabled { opacity: 0.5; cursor: default; }
+        .feedback-skip {
+            display: block;
+            margin-top: 16px;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            color: var(--border);
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .feedback-skip:hover { color: var(--dim); }
+
+        /* ══════════════════════════════════════
+           DONE SCREEN
+           ══════════════════════════════════════ */
+        .done-content { text-align: center; padding: 20px; }
+        .done-icon {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--success);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem;
+            color: var(--success);
+            margin: 0 auto 20px;
+            box-shadow: 0 0 20px rgba(39,174,96,0.3);
+        }
+        .done-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 0.08em;
+            color: var(--success);
+        }
+        .done-sub {
+            font-size: 11px;
+            color: var(--dim);
+            letter-spacing: 0.05em;
+            margin-top: 8px;
+        }
+
+        /* ══════════════════════════════════════
+           TOAST
+           ══════════════════════════════════════ */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%; transform: translateX(-50%) translateY(60px);
+            padding: 10px 24px;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            color: #fff;
+            background: var(--success);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.err { background: var(--danger); }
+
+        /* ══════════════════════════════════════
+           STATES
+           ══════════════════════════════════════ */
+        .loading-text {
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            color: var(--dim);
+        }
+        .error-text {
+            font-size: 12px;
+            color: var(--danger);
+            letter-spacing: 0.1em;
+        }
+
+        /* ══════════════════════════════════════
+           ANIMATIONS
+           ══════════════════════════════════════ */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        @keyframes envelope-fly {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-150%) scale(0.7); opacity: 0; }
+        }
+        @keyframes fade-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes led-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ══════════════════════════════════════
+           RESPONSIVE
+           ══════════════════════════════════════ */
+        @media (max-width: 500px) {
+            .player-wrap { gap: 10px; padding: 0; }
+            .np-num { font-size: 2.5rem; }
+            .np-title { font-size: 1.6rem; }
+            .btn-face { width: 44px; height: 34px; }
+            .deck-housing { padding: 10px 10px; gap: 6px; }
+            .deck-buttons { gap: 2px; }
+            .beat-dot { width: 28px; height: 28px; }
+            .dot-num { font-size: 11px; }
+            .beat-overview { gap: 6px; }
+            .deck-counter { display: none; }
+            .instruct-content { padding: 16px; max-width: 100%; }
+            .instruct-card { padding: 16px 14px; }
+            .btn-go { padding: 12px 40px; font-size: 1.5rem; }
+            .feedback-content { padding: 16px; }
+            .feedback-area { min-height: 100px; }
+            .btn-submit { padding: 10px 36px; font-size: 1.2rem; }
+            .envelope-name { font-size: 1.5rem; }
+            .envelope-sub { font-size: 0.6rem; }
+        }
+        @media (max-width: 360px) {
+            #playerScreen { padding: 12px 8px; }
+            .player-wrap { gap: 8px; }
+            .np-num { font-size: 2rem; }
+            .np-title { font-size: 1.3rem; }
+            .np-meta { font-size: 9px; }
+            .beat-dot { width: 24px; height: 24px; }
+            .dot-num { font-size: 10px; }
+            .beat-overview { gap: 4px; padding: 8px 0; }
+            .btn-face { width: 40px; height: 32px; }
+            .deck-housing { padding: 8px 8px; gap: 4px; }
+            .deck-led-group { display: none; }
+            .player-header { gap: 6px; }
+            .pl-brand { font-size: 1rem; }
+            .instruct-title { font-size: 1.3rem; margin-bottom: 20px; }
+            .instruct-cards { gap: 16px; margin-bottom: 28px; }
+            .feedback-title { font-size: 1.6rem; }
+            .done-title { font-size: 1.8rem; }
+            .done-icon { width: 60px; height: 60px; font-size: 2rem; }
+        }
+        /* Landscape phones */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .player-wrap { max-height: 100%; gap: 6px; }
+            .now-playing { padding: 8px 0; }
+            .np-num { font-size: 1.8rem; }
+            .np-title { font-size: 1.3rem; }
+            .np-rating-hint { margin-top: 6px; }
+            .beat-overview { padding: 6px 0; }
+            .envelope-hint { margin-top: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="screen" id="loadingScreen">
+    <div class="loading-text">LADEN...</div>
+</div>
+
+<!-- ERROR -->
+<div class="screen hidden" id="errorScreen">
+    <div class="error-text" id="errorMsg">PLAYLIST NICHT GEFUNDEN</div>
+</div>
+
+<!-- ENVELOPE -->
+<div class="screen hidden" id="envelopeScreen">
+    <div class="envelope-content">
+        <div class="envelope-wrap">
+            <svg class="envelope-svg" viewBox="0 0 140 110" width="160" height="126" fill="none">
+                <rect x="6" y="24" width="128" height="80" rx="6" stroke="currentColor" stroke-width="3" fill="var(--panel)"/>
+                <path d="M6 28 L70 72 L134 28" stroke="currentColor" stroke-width="3" stroke-linejoin="round" fill="none"/>
+                <line x1="38" y1="62" x2="102" y2="62" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+                <line x1="38" y1="74" x2="88" y2="74" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+                <line x1="38" y1="86" x2="72" y2="86" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+            </svg>
+            <div class="notif-badge" id="beatBadge">0</div>
+        </div>
+        <div class="envelope-name" id="envelopeName"></div>
+        <div class="envelope-sub">NEUE BEATS FUER DICH</div>
+        <div class="envelope-hint">ANTIPPEN ZUM OEFFNEN</div>
+    </div>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div class="screen hidden" id="instructScreen">
+    <div class="instruct-content">
+        <div class="instruct-title">SO GEHT'S</div>
+        <div class="instruct-cards">
+            <div class="instruct-card">
+                <div class="instruct-icon">
+                    <!-- Thumbs down -->
+                    <svg viewBox="0 0 24 24" width="36" height="36" style="color: var(--danger);">
+                        <path fill="currentColor" d="M15 3H6c-.8 0-1.5.5-1.8 1.2l-3 7c0 .2-.1.4-.1.6v2c0 1.1.9 2 2 2h6.3l-.9 4.4c-.1.3 0 .6.2.9l1.1 1.1 6.4-6.4c.4-.4.6-.9.6-1.4V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/>
+                    </svg>
+                    <!-- Thumbs up -->
+                    <svg viewBox="0 0 24 24" width="36" height="36" style="color: var(--success);">
+                        <path fill="currentColor" d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l.9-4.4c.1-.3 0-.6-.2-.9l-1.1-1.1-6.4 6.4c-.4.4-.6.9-.6 1.4v7c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7c0-.2.1-.4.1-.6v-2z"/>
+                    </svg>
+                </div>
+                <div class="instruct-label">BEWERTE JEDEN BEAT</div>
+                <div class="instruct-desc">Daumen hoch oder runter</div>
+            </div>
+            <div class="instruct-card">
+                <div class="instruct-icon">
+                    <!-- Notepad icon -->
+                    <svg viewBox="0 0 24 24" width="36" height="36" style="color: var(--beat-color);">
+                        <path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg>
+                </div>
+                <div class="instruct-label">SCHREIB DEIN FEEDBACK</div>
+                <div class="instruct-desc">Am Ende kurz zusammenfassen</div>
+            </div>
+        </div>
+        <button class="btn-go" id="goBtn">LET'S GO</button>
+    </div>
+</div>
+
+<!-- PLAYER -->
+<div class="screen hidden" id="playerScreen">
+    <div class="player-wrap">
+        <!-- Header -->
+        <div class="player-header">
+            <span class="pl-brand">CPG_BEATS</span>
+            <span class="pl-spacer"></span>
+            <span class="pl-tag" id="playlistTag"></span>
+        </div>
+
+        <!-- Beat Overview -->
+        <div class="beat-overview" id="beatOverview"></div>
+
+        <!-- Now Playing -->
+        <div class="now-playing" id="nowPlaying">
+            <div class="np-num" id="beatNum">#01</div>
+            <div class="np-title" id="beatTitle">-</div>
+            <div class="np-meta" id="beatMeta">-</div>
+            <div class="np-rating-hint" id="ratingHint">HOER REIN UND BEWERTE</div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-section">
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="time-row">
+                <span id="curTime">0:00</span>
+                <span id="durTime">0:00</span>
+            </div>
+        </div>
+
+        <!-- Transport Deck -->
+        <div class="deck-housing">
+            <div class="deck-led-group">
+                <div class="deck-led on" id="pwrLed"></div>
+                <span class="deck-led-label">PWR</span>
+            </div>
+
+            <div class="deck-buttons">
+                <!-- Thumbs Down -->
+                <div class="deck-btn-wrap">
+                    <button class="deck-btn" id="thumbDownBtn">
+                        <span class="btn-shadow"></span>
+                        <span class="btn-edge"></span>
+                        <span class="btn-face">
+                            <svg class="d-icon" viewBox="0 0 24 24" width="15" height="15">
+                                <path fill="currentColor" d="M15 3H6c-.8 0-1.5.5-1.8 1.2l-3 7c0 .2-.1.4-.1.6v2c0 1.1.9 2 2 2h6.3l-.9 4.4c-.1.3 0 .6.2.9l1.1 1.1 6.4-6.4c.4-.4.6-.9.6-1.4V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/>
+                            </svg>
+                        </span>
+                    </button>
+                    <span class="deck-btn-label" id="thumbDownLabel">NOPE</span>
+                </div>
+
+                <!-- Prev -->
+                <div class="deck-btn-wrap">
+                    <button class="deck-btn" id="prevBtn">
+                        <span class="btn-shadow"></span>
+                        <span class="btn-edge"></span>
+                        <span class="btn-face"><span class="d-icon d-rew"></span></span>
+                    </button>
+                    <span class="deck-btn-label">PREV</span>
+                </div>
+
+                <!-- Play/Pause -->
+                <div class="deck-btn-wrap">
+                    <button class="deck-btn" id="playBtn">
+                        <span class="btn-shadow"></span>
+                        <span class="btn-edge"></span>
+                        <span class="btn-face"><span class="d-icon d-play" id="playIcon"></span></span>
+                    </button>
+                    <span class="deck-btn-label">PLAY</span>
+                </div>
+
+                <!-- Next -->
+                <div class="deck-btn-wrap">
+                    <button class="deck-btn" id="nextBtn">
+                        <span class="btn-shadow"></span>
+                        <span class="btn-edge"></span>
+                        <span class="btn-face"><span class="d-icon d-ffw"></span></span>
+                    </button>
+                    <span class="deck-btn-label">NEXT</span>
+                </div>
+
+                <!-- Thumbs Up / Skip -->
+                <div class="deck-btn-wrap">
+                    <button class="deck-btn" id="thumbUpBtn">
+                        <span class="btn-shadow"></span>
+                        <span class="btn-edge"></span>
+                        <span class="btn-face" id="thumbUpFace">
+                            <svg class="d-icon" id="thumbUpIcon" viewBox="0 0 24 24" width="15" height="15">
+                                <path fill="currentColor" d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l.9-4.4c.1-.3 0-.6-.2-.9l-1.1-1.1-6.4 6.4c-.4.4-.6.9-.6 1.4v7c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7c0-.2.1-.4.1-.6v-2z"/>
+                            </svg>
+                        </span>
+                    </button>
+                    <span class="deck-btn-label" id="thumbUpLabel">FIRE</span>
+                </div>
+            </div>
+
+            <div class="deck-led-group">
+                <div class="deck-led" id="tapeLed"></div>
+                <span class="deck-led-label">TAPE</span>
+            </div>
+
+            <div class="deck-counter">
+                <span class="deck-counter-display" id="tapeCounter">01/01</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FEEDBACK -->
+<div class="screen hidden" id="feedbackScreen">
+    <div class="feedback-content">
+        <div class="feedback-title">FAST GESCHAFFT!</div>
+        <div class="feedback-sub">Schreib dein Feedback zur Zusammenarbeit, Wuensche oder Anmerkungen.</div>
+        <textarea class="feedback-area" id="feedbackText" placeholder="Dein Feedback hier..."></textarea>
+        <button class="btn-submit" id="submitBtn">ABSENDEN</button>
+        <button class="feedback-skip" id="skipFeedbackBtn">OHNE FEEDBACK ABSCHLIESSEN</button>
+    </div>
+</div>
+
+<!-- DONE -->
+<div class="screen hidden" id="doneScreen">
+    <div class="done-content">
+        <div class="done-icon">&#10003;</div>
+        <div class="done-title">DANKE!</div>
+        <div class="done-sub">Dein Feedback wurde gespeichert.</div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="beats-api.js"></script>
+<script>
+(() => {
+    'use strict';
+
+    const $ = id => document.getElementById(id);
+    const token = new URLSearchParams(location.search).get('t');
+
+    // Beat accent colors — first is always CI pink
+    const COLORS = [
+        '#E8879A', '#f0c040', '#4fc3f7', '#66bb6a', '#ab47bc',
+        '#ff7043', '#26c6da', '#ffa726', '#7e57c2', '#ef5350'
+    ];
+
+    let beats = [];
+    let ratings = {};       // beatId → 'up' | 'down'
+    let playlistData = null;
+    let currentIdx = 0;
+
+    const audio = new Audio();
+    audio.crossOrigin = 'anonymous';
+    let rafId = null;
+
+    // ── Helpers ──
+    function fmt(s) {
+        if (!s || !isFinite(s)) return '0:00';
+        const m = Math.floor(s / 60);
+        const sec = Math.floor(s % 60);
+        return `${m}:${String(sec).padStart(2, '0')}`;
+    }
+
+    function toast(msg, ok = true) {
+        const el = $('toast');
+        el.textContent = msg;
+        el.className = `toast ${ok ? '' : 'err'} show`;
+        setTimeout(() => el.classList.remove('show'), 2500);
+    }
+
+    function showScreen(name) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        $(name + 'Screen').classList.remove('hidden');
+    }
+
+    // ── Init ──
+    async function init() {
+        if (!token) {
+            $('errorMsg').textContent = 'KEIN PLAYLIST-TOKEN';
+            showScreen('error');
+            return;
+        }
+
+        try {
+            const data = await PlaylistAPI.getByToken(token);
+            if (!data || !data.playlist) {
+                showScreen('error');
+                return;
+            }
+
+            playlistData = data.playlist;
+            beats = data.beats || [];
+
+            // Load existing ratings
+            (data.ratings || []).forEach(r => {
+                ratings[r.beat_id] = r.rating >= 3 ? 'up' : 'down';
+            });
+
+            document.title = `CPG_BEATS — ${playlistData.name}`;
+
+            // Already submitted → done screen
+            if (playlistData.feedback_text) {
+                showScreen('done');
+                return;
+            }
+
+            if (beats.length === 0) {
+                $('errorMsg').textContent = 'KEINE BEATS IN DIESER PLAYLIST';
+                showScreen('error');
+                return;
+            }
+
+            // Show envelope
+            $('beatBadge').textContent = beats.length;
+            $('envelopeName').textContent = `Hey ${playlistData.rapper_name}!`;
+            showScreen('envelope');
+
+        } catch (e) {
+            console.error('[Playlist] init:', e);
+            $('errorMsg').textContent = 'FEHLER: ' + e.message;
+            showScreen('error');
+        }
+    }
+
+    // ── Envelope Click ──
+    $('envelopeScreen').addEventListener('click', () => {
+        $('envelopeScreen').classList.add('exit');
+        setTimeout(() => showScreen('instruct'), 700);
+    });
+
+    // ── Let's Go ──
+    $('goBtn').addEventListener('click', () => {
+        showScreen('player');
+        $('playlistTag').textContent = playlistData.name;
+        renderOverview();
+        loadBeat(0);
+    });
+
+    // ── Beat Overview ──
+    function renderOverview() {
+        $('beatOverview').innerHTML = beats.map((b, i) => {
+            const color = COLORS[i % COLORS.length];
+            const rated = ratings[b.id];
+            const cls = [
+                'beat-dot',
+                i === currentIdx ? 'active' : '',
+                rated ? 'rated-' + rated : ''
+            ].filter(Boolean).join(' ');
+            return `<div class="${cls}" style="--dot-color:${color}" data-idx="${i}">
+                        <span class="dot-num">${i + 1}</span>
+                    </div>`;
+        }).join('');
+
+        // Click handlers
+        $('beatOverview').querySelectorAll('.beat-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                loadBeat(parseInt(dot.dataset.idx));
+            });
+        });
+    }
+
+    // ── Load Beat ──
+    function loadBeat(idx) {
+        if (idx < 0 || idx >= beats.length) return;
+
+        // Fade transition
+        $('nowPlaying').classList.add('switching');
+
+        setTimeout(() => {
+            currentIdx = idx;
+            const beat = beats[idx];
+            const color = COLORS[idx % COLORS.length];
+
+            // Set accent color
+            document.documentElement.style.setProperty('--beat-color', color);
+
+            // Update display
+            $('beatNum').textContent = `#${String(idx + 1).padStart(2, '0')}`;
+            $('beatTitle').textContent = beat.title;
+            $('beatMeta').textContent = [
+                beat.bpm ? beat.bpm + ' BPM' : '',
+                beat.key || '',
+                beat.type || ''
+            ].filter(Boolean).join(' \u00b7 ') || '-';
+
+            // Counter
+            $('tapeCounter').textContent =
+                `${String(idx + 1).padStart(2, '0')}/${String(beats.length).padStart(2, '0')}`;
+
+            // Update overview
+            renderOverview();
+
+            // Update thumbs state
+            updateThumbsState();
+
+            // Update rating hint
+            const r = ratings[beat.id];
+            if (r === 'up') $('ratingHint').textContent = 'GEFAELLT DIR';
+            else if (r === 'down') $('ratingHint').textContent = 'NICHT DEIN DING';
+            else $('ratingHint').textContent = 'HOER REIN UND BEWERTE';
+
+            // Load audio
+            audio.src = beat.audio_url;
+            audio.play().catch(() => {});
+            setPlayState(true);
+
+            $('nowPlaying').classList.remove('switching');
+        }, 200);
+    }
+
+    // ── Thumbs State ──
+    function updateThumbsState() {
+        const beat = beats[currentIdx];
+        const r = ratings[beat.id];
+
+        $('thumbDownBtn').classList.remove('rated-down');
+        $('thumbUpBtn').classList.remove('rated-up');
+
+        if (r === 'up') {
+            $('thumbUpBtn').classList.add('rated-up');
+            // Change to skip icon
+            $('thumbUpIcon').outerHTML =
+                '<span class="d-icon d-ffw" id="thumbUpIcon"></span>';
+            $('thumbUpLabel').textContent = 'SKIP';
+        } else if (r === 'down') {
+            $('thumbDownBtn').classList.add('rated-down');
+            // Reset thumbs up icon
+            resetThumbUpIcon();
+        } else {
+            resetThumbUpIcon();
+        }
+    }
+
+    function resetThumbUpIcon() {
+        const current = $('thumbUpIcon');
+        if (!current || current.tagName === 'svg') {
+            $('thumbUpLabel').textContent = 'FIRE';
+            return;
+        }
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'd-icon');
+        svg.setAttribute('id', 'thumbUpIcon');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('width', '15');
+        svg.setAttribute('height', '15');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('fill', 'currentColor');
+        path.setAttribute('d', 'M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l.9-4.4c.1-.3 0-.6-.2-.9l-1.1-1.1-6.4 6.4c-.4.4-.6.9-.6 1.4v7c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7c0-.2.1-.4.1-.6v-2z');
+        svg.appendChild(path);
+        current.replaceWith(svg);
+        $('thumbUpLabel').textContent = 'FIRE';
+    }
+
+    // ── Thumbs Interactions ──
+    $('thumbDownBtn').addEventListener('click', () => {
+        const beat = beats[currentIdx];
+        ratings[beat.id] = 'down';
+
+        // Save to DB
+        PlaylistAPI.rateBeat(token, beat.id, 1, null).catch(e => {
+            console.error('[Rating]', e);
+            toast('Fehler beim Speichern', false);
+        });
+
+        updateThumbsState();
+        $('ratingHint').textContent = 'NICHT DEIN DING';
+
+        // Auto-skip after brief delay
+        setTimeout(() => goNext(), 350);
+    });
+
+    $('thumbUpBtn').addEventListener('click', () => {
+        const beat = beats[currentIdx];
+
+        if (ratings[beat.id] === 'up') {
+            // Already rated → skip
+            goNext();
+            return;
+        }
+
+        ratings[beat.id] = 'up';
+
+        // Save to DB
+        PlaylistAPI.rateBeat(token, beat.id, 5, null).catch(e => {
+            console.error('[Rating]', e);
+            toast('Fehler beim Speichern', false);
+        });
+
+        updateThumbsState();
+        $('ratingHint').textContent = 'GEFAELLT DIR';
+    });
+
+    // ── Navigation ──
+    function goNext() {
+        if (currentIdx < beats.length - 1) {
+            loadBeat(currentIdx + 1);
+        } else {
+            // All beats done → feedback
+            audio.pause();
+            setPlayState(false);
+            cancelAnimationFrame(rafId);
+            showScreen('feedback');
+        }
+    }
+
+    function goPrev() {
+        if (currentIdx > 0) loadBeat(currentIdx - 1);
+    }
+
+    $('prevBtn').addEventListener('click', goPrev);
+    $('nextBtn').addEventListener('click', goNext);
+
+    // ── Audio Player ──
+    function setPlayState(playing) {
+        const icon = $('playIcon');
+        if (playing) {
+            icon.className = 'd-icon d-play is-paused';
+            $('tapeLed').classList.add('on', 'blink');
+        } else {
+            icon.className = 'd-icon d-play';
+            $('tapeLed').classList.remove('on', 'blink');
+        }
+    }
+
+    function updateProgress() {
+        if (audio.duration && isFinite(audio.duration)) {
+            $('progressFill').style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+            $('curTime').textContent = fmt(audio.currentTime);
+            $('durTime').textContent = fmt(audio.duration);
+        }
+        if (!audio.paused) rafId = requestAnimationFrame(updateProgress);
+    }
+
+    $('playBtn').addEventListener('click', () => {
+        if (!beats.length) return;
+        if (audio.paused) {
+            audio.play().catch(() => {});
+            setPlayState(true);
+            updateProgress();
+        } else {
+            audio.pause();
+            setPlayState(false);
+            cancelAnimationFrame(rafId);
+        }
+    });
+
+    audio.addEventListener('play', () => {
+        setPlayState(true);
+        updateProgress();
+    });
+
+    audio.addEventListener('pause', () => {
+        setPlayState(false);
+        cancelAnimationFrame(rafId);
+    });
+
+    audio.addEventListener('ended', () => {
+        setPlayState(false);
+        cancelAnimationFrame(rafId);
+        $('progressFill').style.width = '0%';
+    });
+
+    // Progress bar seek
+    $('progressBar').addEventListener('click', e => {
+        if (!audio.duration || !isFinite(audio.duration)) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const pct = (e.clientX - rect.left) / rect.width;
+        audio.currentTime = pct * audio.duration;
+    });
+
+    // ── Feedback Submit ──
+    $('submitBtn').addEventListener('click', async () => {
+        const text = $('feedbackText').value.trim();
+        const btn = $('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'WIRD GESENDET...';
+
+        try {
+            if (text) {
+                await PlaylistAPI.submitFeedback(token, text);
+            }
+            showScreen('done');
+        } catch (e) {
+            toast('Fehler: ' + e.message, false);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'ABSENDEN';
+        }
+    });
+
+    $('skipFeedbackBtn').addEventListener('click', () => {
+        showScreen('done');
+    });
+
+    // ── Start ──
+    init();
+})();
+</script>
+</body>
+</html>

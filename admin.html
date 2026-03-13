@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPG_BEATS — ADMIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/essentia.js@0.1.3/dist/essentia-wasm.web.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/essentia.js@0.1.3/dist/essentia.js-core.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #1c1917;
+            --panel: #2a2520;
+            --border: #4a423a;
+            --text: #e4d9d1;
+            --dim: #a89a8c;
+            --accent: #E8879A;
+            --accent2: #f0c040;
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+        html, body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            -webkit-font-smoothing: antialiased;
+        }
+        body { padding: 20px; }
+
+        /* ── Layout ── */
+        .admin-wrap {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .admin-hdr {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+        }
+        .admin-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            letter-spacing: 0.12em;
+        }
+        .admin-tag {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            color: var(--dim);
+            background: var(--panel);
+            padding: 3px 10px;
+            border: 1px solid var(--border);
+        }
+        .admin-spacer { flex: 1; }
+        .admin-user {
+            font-size: 0.7rem;
+            color: var(--dim);
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Panels ── */
+        .panel {
+            background: var(--panel);
+            border: 2px solid var(--border);
+            margin-bottom: 16px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                inset 0 -1px 0 rgba(0,0,0,0.3),
+                0 2px 8px rgba(0,0,0,0.5);
+        }
+        .panel-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .panel-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            color: var(--dim);
+            text-shadow: 0 1px 0 rgba(0,0,0,0.6);
+        }
+        .panel-info {
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            color: var(--border);
+        }
+        .panel-body {
+            padding: 16px;
+        }
+
+        /* ── Login ── */
+        #loginPanel { max-width: 400px; margin: 80px auto; }
+        .login-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            letter-spacing: 0.08em;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .login-sub {
+            text-align: center;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            color: var(--dim);
+            margin-bottom: 30px;
+        }
+
+        /* ── Forms ── */
+        .field {
+            margin-bottom: 12px;
+        }
+        .field label {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: var(--dim);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .field input, .field select, .field textarea {
+            width: 100%;
+            padding: 8px 12px;
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            border-color: var(--accent);
+        }
+        .field input[type="file"] {
+            padding: 6px;
+            cursor: pointer;
+        }
+
+        /* ── Drag & Drop Zone ── */
+        .dropzone {
+            border: 2px dashed var(--border);
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+        }
+        .dropzone:hover {
+            border-color: var(--dim);
+        }
+        .dropzone.dragover {
+            border-color: var(--accent);
+            background: rgba(232, 135, 154, 0.08);
+        }
+        .dropzone.has-file {
+            border-color: var(--success);
+            border-style: solid;
+        }
+        .dropzone-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+            color: var(--dim);
+        }
+        .dropzone.dragover .dropzone-icon { color: var(--accent); }
+        .dropzone-text {
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            color: var(--dim);
+        }
+        .dropzone-file {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 4px;
+            letter-spacing: 0.05em;
+        }
+        .dropzone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .field input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+            accent-color: var(--accent);
+        }
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+        .field-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .field-check {
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+        }
+        .field-check label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 8px 20px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-primary:hover { background: #d6738a; }
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+        .btn-secondary:hover { background: #5a524a; }
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-small {
+            padding: 4px 10px;
+            font-size: 0.65rem;
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        /* ── Table ── */
+        .beats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        .beats-table th {
+            text-align: left;
+            font-size: 0.6rem;
+            letter-spacing: 0.18em;
+            color: var(--dim);
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+        }
+        .beats-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            vertical-align: middle;
+        }
+        .beats-table tr:hover td {
+            background: rgba(255,255,255,0.03);
+        }
+        .beats-table .title-cell {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .badge-public {
+            background: var(--success);
+            color: #fff;
+        }
+        .badge-draft {
+            background: var(--border);
+            color: var(--text);
+        }
+        .tag {
+            display: inline-block;
+            padding: 1px 5px;
+            font-size: 9px;
+            background: rgba(232, 135, 154, 0.15);
+            color: var(--accent);
+            margin: 1px 2px;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            color: #fff;
+            z-index: 1000;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .toast-ok { background: var(--success); }
+        .toast-err { background: var(--danger); }
+
+        /* ── Upload progress ── */
+        .upload-info {
+            margin-top: 6px;
+            font-size: 10px;
+            color: var(--dim);
+            letter-spacing: 0.05em;
+        }
+        .upload-info.uploading { color: var(--accent2); }
+        .upload-info.done { color: var(--success); }
+        .upload-progress { display: none; margin-top: 6px; height: 6px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
+        .upload-progress.active { display: block; }
+        .upload-progress-fill { height: 100%; width: 0%; background: var(--accent2); transition: width 0.15s ease; border-radius: 3px; }
+        .upload-progress.done .upload-progress-fill { background: var(--success); }
+
+        /* ── Analysis ── */
+        .analysis-bar {
+            margin-top: 8px;
+            padding: 8px 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            font-size: 10px;
+            letter-spacing: 0.05em;
+            color: var(--dim);
+            display: none;
+        }
+        .analysis-bar.active { display: block; }
+        .analysis-bar.analyzing {
+            border-color: var(--accent2);
+            color: var(--accent2);
+        }
+        .analysis-bar.done {
+            border-color: var(--success);
+            color: var(--success);
+        }
+        .analysis-bar.error {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        .analysis-results {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 4px 16px;
+            margin-top: 6px;
+            font-size: 11px;
+        }
+        .analysis-results .ar-label {
+            color: var(--dim);
+            font-size: 9px;
+            letter-spacing: 0.15em;
+        }
+        .analysis-results .ar-value {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        /* ── Modal overlay ── */
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+        .overlay.open { display: flex; }
+        .modal {
+            background: var(--panel);
+            border: 2px solid var(--border);
+            width: 90%;
+            max-width: 560px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+        }
+
+        /* ── Empty state ── */
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--dim);
+            font-size: 11px;
+            letter-spacing: 0.1em;
+        }
+
+        /* ── Responsive ── */
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        @media (max-width: 640px) {
+            body { padding: 10px; }
+            .field-row, .field-row-2 { grid-template-columns: 1fr; }
+            .beats-table { font-size: 10px; min-width: 500px; }
+            .beats-table th, .beats-table td { padding: 6px; }
+            .admin-hdr { flex-wrap: wrap; gap: 8px; }
+            .admin-brand { font-size: 1.3rem; }
+            .admin-tag { font-size: 0.6rem; padding: 2px 6px; }
+            .btn { padding: 8px 14px; font-size: 0.65rem; }
+            .btn-small { padding: 6px 10px; font-size: 0.6rem; min-height: 32px; }
+            .panel-body { padding: 12px; }
+            .tab-btn { padding: 8px 12px; font-size: 0.6rem; letter-spacing: 0.1em; }
+            .dropzone { padding: 16px 12px; }
+            .modal { width: 95%; }
+            .detail-info { font-size: 10px; gap: 4px 10px; }
+            .stats-row { flex-wrap: wrap; }
+        }
+        @media (max-width: 400px) {
+            body { padding: 6px; }
+            .admin-hdr { gap: 6px; padding: 8px 0; }
+            .admin-brand { font-size: 1.1rem; }
+            .admin-user { display: none; }
+            .panel-head { padding: 8px 10px; gap: 6px; }
+            .panel-body { padding: 8px; }
+            .tab-btn { padding: 6px 8px; font-size: 0.55rem; letter-spacing: 0.08em; }
+            .btn-group { flex-wrap: wrap; }
+            .field label { font-size: 0.6rem; }
+            .field input, .field select, .field textarea { font-size: 16px; padding: 10px; }
+            #loginPanel { margin: 40px auto; }
+            .login-brand { font-size: 2.2rem; }
+        }
+
+        .hidden { display: none !important; }
+
+        /* ── Bottom Player Bar ── */
+        .player-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background:
+                repeating-linear-gradient(90deg,
+                    rgba(255,255,255,0.02) 0px, transparent 1px, transparent 3px),
+                linear-gradient(180deg, #3a3a3a, #2a2a2a, #333);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 20px;
+            z-index: 400;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        .player-bar.visible { transform: translateY(0); }
+
+        .pb-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 3px;
+            background: linear-gradient(180deg, #555, #444, #3a3a3a);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.15),
+                inset 0 -1px 0 rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .pb-btn:hover {
+            background: linear-gradient(180deg, #666, #555, #4a4a4a);
+        }
+        .pb-play-icon {
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 6px 0 6px 10px;
+            border-color: transparent transparent transparent #ccc;
+            margin-left: 2px;
+        }
+        .pb-pause-icon {
+            display: flex; gap: 3px;
+        }
+        .pb-pause-icon span {
+            width: 3px; height: 12px;
+            background: #ccc;
+        }
+
+        .pb-info {
+            flex: 0 1 auto;
+            min-width: 0;
+            overflow: hidden;
+        }
+        .pb-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text);
+        }
+        .pb-meta {
+            font-size: 9px;
+            color: #777;
+            letter-spacing: 0.08em;
+        }
+
+        .pb-progress-wrap {
+            flex: 1;
+            height: 4px;
+            background: #222;
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+            min-width: 60px;
+        }
+        .pb-progress {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .pb-time {
+            font-size: 10px;
+            color: #777;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .pb-open {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border: 1px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            cursor: pointer;
+            flex-shrink: 0;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+        }
+        .pb-open:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* Play button in table */
+        .btn-play {
+            background: transparent;
+            border: 1px solid #555;
+            color: #aaa;
+            padding: 3px 8px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .btn-play:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .btn-play.playing {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Pad bottom for player bar */
+        body.has-player { padding-bottom: 76px; }
+
+        @media (max-width: 640px) {
+            .pb-info { max-width: 100px; }
+            .pb-open { padding: 4px 8px; font-size: 8px; }
+            .player-bar { padding: 0 10px; gap: 8px; }
+            .pb-time { min-width: 50px; font-size: 9px; }
+        }
+        @media (max-width: 400px) {
+            .pb-open { display: none; }
+            .pb-time { min-width: 40px; }
+            .player-bar { gap: 6px; padding: 0 6px; }
+        }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        .tab-btn {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            padding: 10px 24px;
+            background: transparent;
+            color: var(--dim);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active {
+            color: var(--accent);
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ── Playlist styles ── */
+        .share-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: var(--accent2);
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: color 0.15s;
+        }
+        .share-link:hover { color: #fff; }
+        .share-link-icon { font-size: 12px; }
+
+        .badge-active { background: var(--success); color: #fff; }
+        .badge-inactive { background: var(--danger); color: #fff; }
+        .badge-feedback-yes { background: var(--accent2); color: var(--bg); }
+        .badge-feedback-no { background: var(--border); color: var(--dim); }
+
+        .beat-select-list {
+            max-height: 240px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            background: var(--bg);
+        }
+        .beat-select-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .beat-select-item:hover { background: rgba(255,255,255,0.04); }
+        .beat-select-item input { accent-color: var(--accent); }
+        .beat-select-item .bsi-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 11px;
+        }
+        .beat-select-item .bsi-meta {
+            font-size: 9px;
+            color: var(--dim);
+            letter-spacing: 0.08em;
+        }
+
+        /* Playlist detail view */
+        .detail-back {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--dim);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px 0;
+            margin-bottom: 8px;
+        }
+        .detail-back:hover { color: var(--text); }
+
+        .detail-info {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 4px 16px;
+            font-size: 11px;
+            margin-bottom: 16px;
+        }
+        .detail-info dt {
+            color: var(--dim);
+            font-size: 9px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .detail-info dd { color: var(--text); }
+
+        .rating-stars {
+            color: var(--accent2);
+            letter-spacing: 2px;
+            font-size: 13px;
+        }
+        .rating-stars .star-empty { color: var(--border); }
+
+        .feedback-box {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            color: var(--text);
+        }
+        .feedback-meta {
+            font-size: 9px;
+            color: var(--dim);
+            letter-spacing: 0.1em;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════ LOGIN ══════ -->
+<div id="loginPanel">
+    <div class="login-brand">CPG_BEATS</div>
+    <div class="login-sub">ADMIN PANEL</div>
+    <div class="panel">
+        <div class="panel-head">
+            <span class="panel-title">LOGIN</span>
+        </div>
+        <div class="panel-body">
+            <div class="field">
+                <label>EMAIL</label>
+                <input type="email" id="loginEmail" autocomplete="email">
+            </div>
+            <div class="field">
+                <label>PASSWORD</label>
+                <input type="password" id="loginPass" autocomplete="current-password">
+            </div>
+            <div id="loginError" style="color:var(--danger);font-size:11px;margin-bottom:10px;" class="hidden"></div>
+            <button class="btn btn-primary" id="loginBtn" style="width:100%;">LOGIN</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════ ADMIN DASHBOARD ══════ -->
+<div id="adminDash" class="admin-wrap hidden">
+    <header class="admin-hdr">
+        <span class="admin-brand">CPG_BEATS</span>
+        <span class="admin-tag">ADMIN</span>
+        <span class="admin-spacer"></span>
+        <span class="admin-user" id="adminUser"></span>
+        <button class="btn btn-secondary btn-small" id="logoutBtn">LOGOUT</button>
+    </header>
+
+    <!-- Stats -->
+    <div class="panel">
+        <div class="panel-head">
+            <span class="panel-title">UEBERSICHT</span>
+            <span class="admin-spacer"></span>
+            <span class="panel-info" id="statsInfo">-</span>
+        </div>
+        <div class="panel-body" style="display:flex;gap:30px;">
+            <div>
+                <div style="font-size:2rem;font-family:'Bebas Neue',sans-serif;color:var(--accent);" id="statTotal">0</div>
+                <div style="font-size:0.6rem;letter-spacing:0.15em;color:var(--dim);">TOTAL BEATS</div>
+            </div>
+            <div>
+                <div style="font-size:2rem;font-family:'Bebas Neue',sans-serif;color:var(--success);" id="statPublic">0</div>
+                <div style="font-size:0.6rem;letter-spacing:0.15em;color:var(--dim);">PUBLIC</div>
+            </div>
+            <div>
+                <div style="font-size:2rem;font-family:'Bebas Neue',sans-serif;color:var(--border);" id="statDraft">0</div>
+                <div style="font-size:0.6rem;letter-spacing:0.15em;color:var(--dim);">DRAFT</div>
+            </div>
+            <div style="border-left:1px solid var(--border);padding-left:30px;">
+                <div style="font-size:2rem;font-family:'Bebas Neue',sans-serif;color:var(--accent2);" id="statPlaylists">0</div>
+                <div style="font-size:0.6rem;letter-spacing:0.15em;color:var(--dim);">PLAYLISTS</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="beats">BEATS</button>
+        <button class="tab-btn" data-tab="playlists">PLAYLISTS</button>
+    </div>
+
+    <!-- ── BEATS TAB ── -->
+    <div class="tab-content active" id="tab-beats">
+        <div class="panel">
+            <div class="panel-head">
+                <span class="panel-title">BEATS</span>
+                <span class="admin-spacer"></span>
+                <button class="btn btn-primary btn-small" id="addBeatBtn">+ NEUER BEAT</button>
+            </div>
+            <div class="panel-body" style="padding:0;">
+                <div id="beatsTableWrap">
+                    <div class="empty" id="beatsEmpty">KEINE BEATS VORHANDEN</div>
+                    <div class="table-scroll"><table class="beats-table hidden" id="beatsTable">
+                        <thead>
+                            <tr>
+                                <th>TITLE</th>
+                                <th>BPM</th>
+                                <th>KEY</th>
+                                <th>TYPE</th>
+                                <th>PREIS</th>
+                                <th>STATUS</th>
+                                <th style="text-align:right;">AKTIONEN</th>
+                            </tr>
+                        </thead>
+                        <tbody id="beatsTbody"></tbody>
+                    </table></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PLAYLISTS TAB ── -->
+    <div class="tab-content" id="tab-playlists">
+        <!-- Playlist List View -->
+        <div id="playlistListView">
+            <div class="panel">
+                <div class="panel-head">
+                    <span class="panel-title">PLAYLISTS</span>
+                    <span class="admin-spacer"></span>
+                    <button class="btn btn-primary btn-small" id="addPlaylistBtn">+ NEUE PLAYLIST</button>
+                </div>
+                <div class="panel-body" style="padding:0;">
+                    <div class="empty" id="playlistsEmpty">KEINE PLAYLISTS VORHANDEN</div>
+                    <div class="table-scroll"><table class="beats-table hidden" id="playlistsTable">
+                        <thead>
+                            <tr>
+                                <th>NAME</th>
+                                <th>RAPPER</th>
+                                <th>BEATS</th>
+                                <th>FEEDBACK</th>
+                                <th>LINK</th>
+                                <th style="text-align:right;">AKTIONEN</th>
+                            </tr>
+                        </thead>
+                        <tbody id="playlistsTbody"></tbody>
+                    </table></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Playlist Detail View -->
+        <div id="playlistDetailView" class="hidden">
+            <button class="detail-back" id="backToPlaylists">&larr; ZURUECK ZUR UEBERSICHT</button>
+
+            <div class="panel">
+                <div class="panel-head">
+                    <span class="panel-title" id="detailTitle">PLAYLIST DETAIL</span>
+                    <span class="admin-spacer"></span>
+                    <span class="panel-info" id="detailStatus"></span>
+                </div>
+                <div class="panel-body">
+                    <dl class="detail-info" id="detailInfo"></dl>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-head">
+                    <span class="panel-title">BEATS IN PLAYLIST</span>
+                    <span class="admin-spacer"></span>
+                    <span class="panel-info" id="detailBeatCount">0 BEATS</span>
+                </div>
+                <div class="panel-body" style="padding:0;">
+                    <div class="empty hidden" id="detailBeatsEmpty">KEINE BEATS IN PLAYLIST</div>
+                    <div class="table-scroll"><table class="beats-table hidden" id="detailBeatsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>TITLE</th>
+                                <th>BPM</th>
+                                <th>KEY</th>
+                                <th>BEWERTUNG</th>
+                                <th>KOMMENTAR</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailBeatsTbody"></tbody>
+                    </table></div>
+                </div>
+            </div>
+
+            <div class="panel" id="detailFeedbackPanel">
+                <div class="panel-head">
+                    <span class="panel-title">TEXT-FEEDBACK</span>
+                    <span class="admin-spacer"></span>
+                    <span class="panel-info" id="detailFeedbackStatus">AUSSTEHEND</span>
+                </div>
+                <div class="panel-body">
+                    <div class="empty" id="detailFeedbackEmpty">NOCH KEIN FEEDBACK ERHALTEN</div>
+                    <div class="hidden" id="detailFeedbackContent">
+                        <div class="feedback-box" id="detailFeedbackText"></div>
+                        <div class="feedback-meta" id="detailFeedbackMeta"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════ BEAT FORM MODAL ══════ -->
+<div class="overlay" id="beatModal">
+    <div class="modal">
+        <div class="panel-head">
+            <span class="panel-title" id="modalTitle">NEUER BEAT</span>
+            <span class="admin-spacer"></span>
+            <button class="btn btn-secondary btn-small" id="modalClose">&times;</button>
+        </div>
+        <div class="panel-body">
+            <input type="hidden" id="beatId">
+
+            <div class="field">
+                <label>TITLE</label>
+                <input type="text" id="fTitle" placeholder="z.B. VERDUFTEST">
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label>BPM</label>
+                    <input type="number" id="fBpm" placeholder="92" min="40" max="300">
+                </div>
+                <div class="field">
+                    <label>KEY</label>
+                    <input type="text" id="fKey" placeholder="Cm">
+                </div>
+                <div class="field">
+                    <label>TYPE</label>
+                    <input type="text" id="fType" placeholder="BOOM BAP">
+                </div>
+            </div>
+
+            <div class="field-row-2">
+                <div class="field">
+                    <label>PREIS (EUR)</label>
+                    <input type="number" id="fPrice" placeholder="29.99" step="0.01" min="0">
+                </div>
+                <div class="field">
+                    <label>TAGS (Komma-getrennt)</label>
+                    <input type="text" id="fTags" placeholder="dark, piano, sample">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>AUDIO DATEI</label>
+                <div class="dropzone" id="dropzone">
+                    <input type="file" id="fAudioFile" accept="audio/mpeg,audio/mp3,audio/wav">
+                    <div class="dropzone-icon" id="dzIcon">&#x1F3B5;</div>
+                    <div class="dropzone-text" id="dzText">MP3 / WAV HIERHER ZIEHEN ODER KLICKEN</div>
+                    <div class="dropzone-file hidden" id="dzFile"></div>
+                </div>
+                <div class="upload-info" id="uploadInfo"></div>
+                <div class="upload-progress" id="uploadProgress"><div class="upload-progress-fill" id="uploadProgressFill"></div></div>
+                <div class="analysis-bar" id="analysisBar">
+                    <div id="analysisStatus">ANALYZING...</div>
+                    <div class="analysis-results hidden" id="analysisResults">
+                        <span class="ar-label">BPM</span>
+                        <span class="ar-label">KEY</span>
+                        <span class="ar-label">DURATION</span>
+                        <span class="ar-value" id="arBpm">-</span>
+                        <span class="ar-value" id="arKey">-</span>
+                        <span class="ar-value" id="arDur">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>ODER: AUDIO URL (R2 / extern)</label>
+                <input type="text" id="fAudioUrl" placeholder="https://...">
+            </div>
+
+            <div class="field-check">
+                <input type="checkbox" id="fPublic" checked>
+                <label for="fPublic">OEFFENTLICH</label>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="saveBeatBtn">SPEICHERN</button>
+                <button class="btn btn-secondary" id="cancelBeatBtn">ABBRECHEN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════ PLAYLIST FORM MODAL ══════ -->
+<div class="overlay" id="playlistModal">
+    <div class="modal">
+        <div class="panel-head">
+            <span class="panel-title" id="plModalTitle">NEUE PLAYLIST</span>
+            <span class="admin-spacer"></span>
+            <button class="btn btn-secondary btn-small" id="plModalClose">&times;</button>
+        </div>
+        <div class="panel-body">
+            <input type="hidden" id="plId">
+
+            <div class="field">
+                <label>NAME</label>
+                <input type="text" id="plName" placeholder="z.B. Session Beats Maerz">
+            </div>
+
+            <div class="field">
+                <label>RAPPER NAME</label>
+                <input type="text" id="plRapper" placeholder="z.B. MC Hammer">
+            </div>
+
+            <div class="field">
+                <label>NOTIZEN (intern, nur fuer dich)</label>
+                <textarea id="plNotes" rows="2" placeholder="Optionale Notizen..."></textarea>
+            </div>
+
+            <div class="field">
+                <label>BEATS AUSWAEHLEN</label>
+                <div class="beat-select-list" id="beatSelectList">
+                    <div class="empty">LADE BEATS...</div>
+                </div>
+            </div>
+
+            <div class="field-check">
+                <input type="checkbox" id="plActive" checked>
+                <label for="plActive">AKTIV (Link funktioniert)</label>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="savePlaylistBtn">SPEICHERN</button>
+                <button class="btn btn-secondary" id="cancelPlaylistBtn">ABBRECHEN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════ DELETE PLAYLIST CONFIRM ══════ -->
+<div class="overlay" id="deletePlaylistModal">
+    <div class="modal" style="max-width:400px;">
+        <div class="panel-head">
+            <span class="panel-title">PLAYLIST LOESCHEN</span>
+        </div>
+        <div class="panel-body" style="text-align:center;">
+            <p style="margin-bottom:16px;font-size:12px;">
+                Playlist "<strong id="delPlaylistName"></strong>" wirklich loeschen?<br>
+                <span style="color:var(--dim);font-size:10px;">Alle Bewertungen gehen verloren.</span>
+            </p>
+            <input type="hidden" id="delPlaylistId">
+            <div class="btn-group" style="justify-content:center;">
+                <button class="btn btn-danger" id="confirmDeletePlaylistBtn">LOESCHEN</button>
+                <button class="btn btn-secondary" id="cancelDeletePlaylistBtn">ABBRECHEN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════ DELETE CONFIRM MODAL ══════ -->
+<div class="overlay" id="deleteModal">
+    <div class="modal" style="max-width:400px;">
+        <div class="panel-head">
+            <span class="panel-title">BEAT LOESCHEN</span>
+        </div>
+        <div class="panel-body" style="text-align:center;">
+            <p style="margin-bottom:16px;font-size:12px;">
+                Beat "<strong id="delBeatName"></strong>" wirklich loeschen?
+            </p>
+            <input type="hidden" id="delBeatId">
+            <div class="btn-group" style="justify-content:center;">
+                <button class="btn btn-danger" id="confirmDeleteBtn">LOESCHEN</button>
+                <button class="btn btn-secondary" id="cancelDeleteBtn">ABBRECHEN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════ BOTTOM PLAYER BAR ══════ -->
+<div class="player-bar" id="playerBar">
+    <button class="pb-btn" id="pbPlayBtn" title="Play/Pause">
+        <span class="pb-play-icon" id="pbIcon"></span>
+    </button>
+    <div class="pb-info">
+        <div class="pb-title" id="pbTitle">-</div>
+        <div class="pb-meta" id="pbMeta">-</div>
+    </div>
+    <div class="pb-progress-wrap" id="pbProgressWrap">
+        <div class="pb-progress" id="pbProgress"></div>
+    </div>
+    <span class="pb-time" id="pbTime">0:00 / 0:00</span>
+    <a class="pb-open" id="pbOpenPlayer" href="#" target="_blank" title="Im Player oeffnen">PLAYER &#x2197;</a>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="beats-api.js"></script>
+<script>
+(() => {
+    'use strict';
+
+    const $ = id => document.getElementById(id);
+
+    // ── DOM ──
+    const loginPanel = $('loginPanel');
+    const adminDash = $('adminDash');
+    const beatModal = $('beatModal');
+    const deleteModal = $('deleteModal');
+
+    let beats = [];
+    let essentia = null;
+
+    // ── Essentia.js init ──
+    EssentiaWASM().then(wasmModule => {
+        essentia = new Essentia(wasmModule);
+        console.log('[Essentia] ready:', essentia.version);
+    }).catch(e => console.warn('[Essentia] init failed:', e));
+
+    // ── Audio analysis ──
+    async function analyzeAudioFile(file) {
+        if (!essentia) {
+            console.warn('[Analysis] essentia not ready');
+            return null;
+        }
+
+        const bar = $('analysisBar');
+        const status = $('analysisStatus');
+        const results = $('analysisResults');
+        bar.className = 'analysis-bar active analyzing';
+        status.textContent = 'DECODING AUDIO...';
+        results.classList.add('hidden');
+
+        try {
+            const arrayBuf = await file.arrayBuffer();
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
+            const monoData = audioBuf.getChannelData(0);
+            const sampleRate = audioBuf.sampleRate;
+            const duration = audioBuf.duration;
+
+            status.textContent = 'ANALYZING BPM...';
+            const signal = essentia.arrayToVector(monoData);
+
+            // BPM via PercivalBpmEstimator
+            let bpm = null;
+            try {
+                const bpmResult = essentia.PercivalBpmEstimator(signal);
+                bpm = Math.round(bpmResult.bpm);
+                if (bpm < 40 || bpm > 300) bpm = null;
+            } catch (e) {
+                console.warn('[Analysis] BPM failed:', e);
+            }
+
+            // Key via KeyExtractor
+            status.textContent = 'ANALYZING KEY...';
+            let key = null;
+            let scale = null;
+            try {
+                const keyResult = essentia.KeyExtractor(signal, true, 4096, 2048, 12,
+                    3500, 60, 60, 0.2, 'bgate', sampleRate, 0.0001, 440, 'cosine', 'hann');
+                key = keyResult.key;
+                scale = keyResult.scale;
+            } catch (e) {
+                console.warn('[Analysis] Key failed:', e);
+            }
+
+            audioCtx.close();
+
+            // Format results
+            const keyStr = key ? `${key}${scale === 'minor' ? 'm' : ''}` : null;
+            const durMin = Math.floor(duration / 60);
+            const durSec = Math.floor(duration % 60);
+            const durStr = `${durMin}:${String(durSec).padStart(2, '0')}`;
+
+            // Show results
+            $('arBpm').textContent = bpm || '?';
+            $('arKey').textContent = keyStr || '?';
+            $('arDur').textContent = durStr;
+            results.classList.remove('hidden');
+            bar.className = 'analysis-bar active done';
+            status.textContent = 'ANALYSE FERTIG';
+
+            return { bpm, key: keyStr, duration };
+        } catch (e) {
+            console.error('[Analysis] error:', e);
+            bar.className = 'analysis-bar active error';
+            status.textContent = 'ANALYSE FEHLGESCHLAGEN: ' + e.message;
+            return null;
+        }
+    }
+
+    // ── Toast ──
+    function toast(msg, ok = true) {
+        const el = $('toast');
+        el.textContent = msg;
+        el.className = `toast ${ok ? 'toast-ok' : 'toast-err'} show`;
+        setTimeout(() => el.classList.remove('show'), 3000);
+    }
+
+    // ── Auth ──
+    async function checkSession() {
+        const session = await AdminAPI.getSession();
+        if (session) {
+            showDashboard(session.user);
+        }
+    }
+
+    function showDashboard(user) {
+        loginPanel.classList.add('hidden');
+        adminDash.classList.remove('hidden');
+        $('adminUser').textContent = user.email;
+        loadBeats();
+        loadPlaylistCount();
+    }
+
+    async function loadPlaylistCount() {
+        try {
+            const pls = await AdminAPI.getAllPlaylists();
+            $('statPlaylists').textContent = pls.length;
+        } catch (e) { /* ignore */ }
+    }
+
+    $('loginBtn').onclick = async () => {
+        const email = $('loginEmail').value.trim();
+        const pass = $('loginPass').value;
+        const errEl = $('loginError');
+        errEl.classList.add('hidden');
+
+        if (!email || !pass) {
+            errEl.textContent = 'Email und Passwort eingeben';
+            errEl.classList.remove('hidden');
+            return;
+        }
+
+        $('loginBtn').disabled = true;
+        $('loginBtn').textContent = 'LOGGING IN...';
+        try {
+            const data = await AdminAPI.login(email, pass);
+            showDashboard(data.user);
+        } catch (e) {
+            errEl.textContent = e.message || 'Login fehlgeschlagen';
+            errEl.classList.remove('hidden');
+        } finally {
+            $('loginBtn').disabled = false;
+            $('loginBtn').textContent = 'LOGIN';
+        }
+    };
+
+    // Enter key on password field
+    $('loginPass').addEventListener('keydown', e => {
+        if (e.key === 'Enter') $('loginBtn').click();
+    });
+
+    $('logoutBtn').onclick = async () => {
+        await AdminAPI.logout();
+        adminDash.classList.add('hidden');
+        loginPanel.classList.remove('hidden');
+        $('loginEmail').value = '';
+        $('loginPass').value = '';
+    };
+
+    // ── Load beats ──
+    async function loadBeats() {
+        beats = await AdminAPI.getAllBeats();
+        renderBeats();
+        renderStats();
+    }
+
+    function renderStats() {
+        const pub = beats.filter(b => b.is_public).length;
+        $('statTotal').textContent = beats.length;
+        $('statPublic').textContent = pub;
+        $('statDraft').textContent = beats.length - pub;
+        $('statsInfo').textContent = `STAND: ${new Date().toLocaleString('de-DE')}`;
+    }
+
+    function renderBeats() {
+        const tbody = $('beatsTbody');
+        const table = $('beatsTable');
+        const empty = $('beatsEmpty');
+
+        if (beats.length === 0) {
+            table.classList.add('hidden');
+            empty.classList.remove('hidden');
+            return;
+        }
+
+        empty.classList.add('hidden');
+        table.classList.remove('hidden');
+        tbody.innerHTML = beats.map(b => `
+            <tr>
+                <td class="title-cell">
+                    <button class="btn-play" id="play-${b.id}" onclick="playBeat('${b.id}')" title="Abspielen">&#9654;</button>
+                    ${esc(b.title)}
+                </td>
+                <td>${b.bpm || '-'}</td>
+                <td>${esc(b.key || '-')}</td>
+                <td>${esc(b.type || '-')}</td>
+                <td>${b.price != null ? b.price.toFixed(2) + ' EUR' : '-'}</td>
+                <td>${b.is_public
+                    ? '<span class="badge badge-public">PUBLIC</span>'
+                    : '<span class="badge badge-draft">DRAFT</span>'}</td>
+                <td style="text-align:right;">
+                    <button class="btn btn-secondary btn-small" onclick="editBeat('${b.id}')">EDIT</button>
+                    <button class="btn btn-danger btn-small" onclick="delBeat('${b.id}','${esc(b.title)}')">DEL</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function esc(s) {
+        if (!s) return '';
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    // ── Beat form ──
+    function clearForm() {
+        $('beatId').value = '';
+        $('fTitle').value = '';
+        $('fBpm').value = '';
+        $('fKey').value = '';
+        $('fType').value = '';
+        $('fPrice').value = '';
+        $('fTags').value = '';
+        $('fAudioFile').value = '';
+        $('fAudioUrl').value = '';
+        $('fPublic').checked = true;
+        $('uploadInfo').textContent = '';
+        $('uploadInfo').className = 'upload-info';
+        $('uploadProgress').className = 'upload-progress';
+        $('uploadProgressFill').style.width = '0%';
+        $('analysisBar').className = 'analysis-bar';
+        $('analysisResults').classList.add('hidden');
+        droppedFile = null;
+        $('dropzone').classList.remove('has-file');
+        $('dzIcon').textContent = '\uD83C\uDFB5';
+        $('dzText').textContent = 'MP3 / WAV HIERHER ZIEHEN ODER KLICKEN';
+        $('dzFile').classList.add('hidden');
+    }
+
+    function openModal(title) {
+        $('modalTitle').textContent = title;
+        beatModal.classList.add('open');
+    }
+
+    function closeModal() {
+        beatModal.classList.remove('open');
+    }
+
+    $('addBeatBtn').onclick = () => {
+        clearForm();
+        openModal('NEUER BEAT');
+    };
+
+    // ── Drag & Drop + File select ──
+    const dropzone = $('dropzone');
+    let droppedFile = null;
+
+    async function handleFile(file) {
+        if (!file) return;
+        if (!/audio\/(mpeg|mp3|wav|x-wav)/.test(file.type) && !/\.(mp3|wav)$/i.test(file.name)) {
+            toast('Nur MP3/WAV Dateien', false);
+            return;
+        }
+
+        droppedFile = file;
+        dropzone.classList.add('has-file');
+        $('dzIcon').textContent = '\u2713';
+        $('dzText').textContent = 'DATEI AUSGEWAEHLT';
+        $('dzFile').textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + ' MB)';
+        $('dzFile').classList.remove('hidden');
+
+        // Auto-fill title from filename if empty
+        if (!$('fTitle').value.trim()) {
+            const name = file.name.replace(/\.[^.]+$/, '').replace(/[_-]/g, ' ').trim();
+            $('fTitle').value = name.toUpperCase();
+        }
+
+        const result = await analyzeAudioFile(file);
+        if (!result) return;
+
+        if (result.bpm && !$('fBpm').value) $('fBpm').value = result.bpm;
+        if (result.key && !$('fKey').value) $('fKey').value = result.key;
+    }
+
+    // File input change
+    $('fAudioFile').addEventListener('change', e => handleFile(e.target.files[0]));
+
+    // Drag events
+    dropzone.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', e => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+    });
+    dropzone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) handleFile(file);
+    });
+
+    $('modalClose').onclick = closeModal;
+    $('cancelBeatBtn').onclick = closeModal;
+
+    // Close modal on overlay click
+    beatModal.addEventListener('click', e => {
+        if (e.target === beatModal) closeModal();
+    });
+
+    // Edit
+    window.editBeat = (id) => {
+        const b = beats.find(x => x.id === id);
+        if (!b) return;
+        clearForm();
+        $('beatId').value = b.id;
+        $('fTitle').value = b.title || '';
+        $('fBpm').value = b.bpm || '';
+        $('fKey').value = b.key || '';
+        $('fType').value = b.type || '';
+        $('fPrice').value = b.price || '';
+        $('fTags').value = (b.tags || []).join(', ');
+        $('fAudioUrl').value = b.audio_url || '';
+        $('fPublic').checked = b.is_public;
+        openModal('BEAT BEARBEITEN');
+    };
+
+    // Save
+    $('saveBeatBtn').onclick = async () => {
+        const title = $('fTitle').value.trim();
+        if (!title) { toast('Title ist Pflichtfeld', false); return; }
+
+        const btn = $('saveBeatBtn');
+        btn.disabled = true;
+        btn.textContent = 'SPEICHERN...';
+
+        try {
+            let audioUrl = $('fAudioUrl').value.trim();
+            const file = droppedFile || $('fAudioFile').files[0];
+
+            // Upload file if selected
+            if (file) {
+                $('uploadInfo').textContent = 'UPLOADING... 0%';
+                $('uploadInfo').className = 'upload-info uploading';
+                const prog = $('uploadProgress');
+                const fill = $('uploadProgressFill');
+                prog.className = 'upload-progress active';
+                fill.style.width = '0%';
+                audioUrl = await AdminAPI.uploadAudio(file, pct => {
+                    const p = Math.round(pct * 100);
+                    fill.style.width = p + '%';
+                    $('uploadInfo').textContent = `UPLOADING... ${p}%`;
+                });
+                fill.style.width = '100%';
+                prog.classList.add('done');
+                $('uploadInfo').textContent = 'UPLOAD COMPLETE';
+                $('uploadInfo').className = 'upload-info done';
+            }
+
+            if (!audioUrl) {
+                toast('Audio-Datei oder URL erforderlich', false);
+                return;
+            }
+
+            const tags = $('fTags').value.trim()
+                ? $('fTags').value.split(',').map(t => t.trim()).filter(Boolean)
+                : [];
+
+            const beatData = {
+                title: title.toUpperCase(),
+                bpm: parseInt($('fBpm').value) || null,
+                key: $('fKey').value.trim() || null,
+                type: $('fType').value.trim().toUpperCase() || null,
+                price: parseFloat($('fPrice').value) || null,
+                tags,
+                audio_url: audioUrl,
+                is_public: $('fPublic').checked,
+            };
+
+            const id = $('beatId').value;
+            if (id) {
+                await AdminAPI.updateBeat(id, beatData);
+                toast('Beat aktualisiert');
+            } else {
+                await AdminAPI.createBeat(beatData);
+                toast('Beat erstellt');
+            }
+
+            closeModal();
+            await loadBeats();
+        } catch (e) {
+            toast(e.message || 'Fehler beim Speichern', false);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'SPEICHERN';
+        }
+    };
+
+    // ── Delete ──
+    window.delBeat = (id, title) => {
+        $('delBeatId').value = id;
+        $('delBeatName').textContent = title;
+        deleteModal.classList.add('open');
+    };
+
+    $('cancelDeleteBtn').onclick = () => deleteModal.classList.remove('open');
+    deleteModal.addEventListener('click', e => {
+        if (e.target === deleteModal) deleteModal.classList.remove('open');
+    });
+
+    $('confirmDeleteBtn').onclick = async () => {
+        const id = $('delBeatId').value;
+        const btn = $('confirmDeleteBtn');
+        btn.disabled = true;
+        btn.textContent = 'LOESCHEN...';
+        try {
+            await AdminAPI.deleteBeat(id);
+            toast('Beat geloescht');
+            deleteModal.classList.remove('open');
+            await loadBeats();
+        } catch (e) {
+            toast(e.message || 'Fehler beim Loeschen', false);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'LOESCHEN';
+        }
+    };
+
+    // ── Player ──
+    const audio = new Audio();
+    audio.crossOrigin = 'anonymous';
+    let currentPlayId = null;
+    let playerVisible = false;
+    let rafId = null;
+
+    function fmt(s) {
+        if (!s || !isFinite(s)) return '0:00';
+        const m = Math.floor(s / 60);
+        const sec = Math.floor(s % 60);
+        return `${m}:${String(sec).padStart(2, '0')}`;
+    }
+
+    function showPlayer() {
+        if (playerVisible) return;
+        playerVisible = true;
+        $('playerBar').classList.add('visible');
+        document.body.classList.add('has-player');
+    }
+
+    function updatePlayerUI() {
+        $('pbProgress').style.width = audio.duration
+            ? `${(audio.currentTime / audio.duration) * 100}%` : '0%';
+        $('pbTime').textContent = `${fmt(audio.currentTime)} / ${fmt(audio.duration)}`;
+        if (!audio.paused) rafId = requestAnimationFrame(updatePlayerUI);
+    }
+
+    function setPlayIcon(playing) {
+        $('pbIcon').outerHTML = playing
+            ? '<span class="pb-pause-icon" id="pbIcon"><span></span><span></span></span>'
+            : '<span class="pb-play-icon" id="pbIcon"></span>';
+    }
+
+    function clearPlayingButtons() {
+        document.querySelectorAll('.btn-play.playing').forEach(b => b.classList.remove('playing'));
+    }
+
+    window.playBeat = (id) => {
+        const b = beats.find(x => x.id === id);
+        if (!b || !b.audio_url) { toast('Keine Audio-URL', false); return; }
+
+        if (currentPlayId === id && !audio.paused) {
+            audio.pause();
+            setPlayIcon(false);
+            clearPlayingButtons();
+            cancelAnimationFrame(rafId);
+            return;
+        }
+
+        if (currentPlayId !== id) {
+            audio.src = b.audio_url;
+            currentPlayId = id;
+            $('pbTitle').textContent = b.title;
+            $('pbMeta').textContent = [b.bpm ? b.bpm + ' BPM' : '', b.key || ''].filter(Boolean).join(' · ') || '-';
+            $('pbOpenPlayer').href = `index.html?beat=${id}`;
+        }
+
+        showPlayer();
+        clearPlayingButtons();
+        const btn = $('play-' + id);
+        if (btn) btn.classList.add('playing');
+        audio.play();
+        setPlayIcon(true);
+        updatePlayerUI();
+    };
+
+    $('pbPlayBtn').onclick = () => {
+        if (!currentPlayId) return;
+        if (audio.paused) {
+            audio.play();
+            setPlayIcon(true);
+            const btn = $('play-' + currentPlayId);
+            if (btn) btn.classList.add('playing');
+            updatePlayerUI();
+        } else {
+            audio.pause();
+            setPlayIcon(false);
+            clearPlayingButtons();
+            cancelAnimationFrame(rafId);
+        }
+    };
+
+    audio.addEventListener('ended', () => {
+        setPlayIcon(false);
+        clearPlayingButtons();
+        cancelAnimationFrame(rafId);
+        $('pbProgress').style.width = '0%';
+    });
+
+    // Click on progress bar to seek
+    $('pbProgressWrap').addEventListener('click', e => {
+        if (!audio.duration) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const pct = (e.clientX - rect.left) / rect.width;
+        audio.currentTime = pct * audio.duration;
+    });
+
+    // ── Tabs ──
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            const tab = $('tab-' + btn.dataset.tab);
+            if (tab) tab.classList.add('active');
+            if (btn.dataset.tab === 'playlists') loadPlaylists();
+        });
+    });
+
+    // ── Playlists ──
+    let playlists = [];
+    const playlistModal = $('playlistModal');
+    const deletePlaylistModal = $('deletePlaylistModal');
+    let selectedBeatIds = new Set();
+
+    async function loadPlaylists() {
+        playlists = await AdminAPI.getAllPlaylists();
+        renderPlaylists();
+    }
+
+    function renderPlaylists() {
+        const tbody = $('playlistsTbody');
+        const table = $('playlistsTable');
+        const empty = $('playlistsEmpty');
+
+        if (playlists.length === 0) {
+            table.classList.add('hidden');
+            empty.classList.remove('hidden');
+            return;
+        }
+
+        empty.classList.add('hidden');
+        table.classList.remove('hidden');
+        tbody.innerHTML = playlists.map(p => {
+            const beatCount = p.playlist_beats?.[0]?.count || 0;
+            const ratingCount = p.beat_ratings?.[0]?.count || 0;
+            const hasFeedback = !!p.feedback_text;
+            const shareUrl = `${location.origin}${location.pathname.replace('admin.html', '')}playlist.html?t=${p.share_token}`;
+            return `
+            <tr>
+                <td class="title-cell">${esc(p.name)}</td>
+                <td>${esc(p.rapper_name)}</td>
+                <td>${beatCount}</td>
+                <td>
+                    ${hasFeedback
+                        ? '<span class="badge badge-feedback-yes">ERHALTEN</span>'
+                        : (ratingCount > 0
+                            ? '<span class="badge badge-feedback-yes">' + ratingCount + ' RATINGS</span>'
+                            : '<span class="badge badge-feedback-no">AUSSTEHEND</span>')}
+                </td>
+                <td>
+                    <span class="share-link" onclick="copyShareLink('${esc(shareUrl)}')" title="${esc(shareUrl)}">
+                        <span class="share-link-icon">&#x1F517;</span> KOPIEREN
+                    </span>
+                </td>
+                <td style="text-align:right;">
+                    <button class="btn btn-secondary btn-small" onclick="viewPlaylist('${p.id}')">DETAIL</button>
+                    <button class="btn btn-secondary btn-small" onclick="editPlaylist('${p.id}')">EDIT</button>
+                    <button class="btn btn-danger btn-small" onclick="delPlaylist('${p.id}','${esc(p.name)}')">DEL</button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    window.copyShareLink = (url) => {
+        navigator.clipboard.writeText(url).then(() => toast('Link kopiert!')).catch(() => {
+            // Fallback
+            const ta = document.createElement('textarea');
+            ta.value = url;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            toast('Link kopiert!');
+        });
+    };
+
+    // ── Playlist Form ──
+    function clearPlaylistForm() {
+        $('plId').value = '';
+        $('plName').value = '';
+        $('plRapper').value = '';
+        $('plNotes').value = '';
+        $('plActive').checked = true;
+        selectedBeatIds = new Set();
+        renderBeatSelectList();
+    }
+
+    function renderBeatSelectList() {
+        const list = $('beatSelectList');
+        if (beats.length === 0) {
+            list.innerHTML = '<div class="empty">KEINE BEATS VORHANDEN</div>';
+            return;
+        }
+        list.innerHTML = beats.map(b => `
+            <label class="beat-select-item">
+                <input type="checkbox" value="${b.id}" ${selectedBeatIds.has(b.id) ? 'checked' : ''} onchange="toggleBeatSelect(this)">
+                <div>
+                    <div class="bsi-title">${esc(b.title)}</div>
+                    <div class="bsi-meta">${[b.bpm ? b.bpm + ' BPM' : '', b.key || '', b.type || ''].filter(Boolean).join(' · ')}</div>
+                </div>
+            </label>
+        `).join('');
+    }
+
+    window.toggleBeatSelect = (cb) => {
+        if (cb.checked) selectedBeatIds.add(cb.value);
+        else selectedBeatIds.delete(cb.value);
+    };
+
+    $('addPlaylistBtn').onclick = () => {
+        clearPlaylistForm();
+        $('plModalTitle').textContent = 'NEUE PLAYLIST';
+        playlistModal.classList.add('open');
+    };
+
+    $('plModalClose').onclick = () => playlistModal.classList.remove('open');
+    $('cancelPlaylistBtn').onclick = () => playlistModal.classList.remove('open');
+    playlistModal.addEventListener('click', e => { if (e.target === playlistModal) playlistModal.classList.remove('open'); });
+
+    window.editPlaylist = async (id) => {
+        const p = playlists.find(x => x.id === id);
+        if (!p) return;
+
+        // Load detail to get beat IDs
+        try {
+            const detail = await AdminAPI.getPlaylistDetail(id);
+            clearPlaylistForm();
+            $('plId').value = p.id;
+            $('plName').value = p.name;
+            $('plRapper').value = p.rapper_name;
+            $('plNotes').value = p.notes || '';
+            $('plActive').checked = p.is_active;
+            selectedBeatIds = new Set(detail.beats.map(pb => pb.beat_id));
+            renderBeatSelectList();
+            $('plModalTitle').textContent = 'PLAYLIST BEARBEITEN';
+            playlistModal.classList.add('open');
+        } catch (e) {
+            toast('Fehler beim Laden: ' + e.message, false);
+        }
+    };
+
+    $('savePlaylistBtn').onclick = async () => {
+        const name = $('plName').value.trim();
+        const rapper = $('plRapper').value.trim();
+        if (!name) { toast('Name ist Pflichtfeld', false); return; }
+        if (!rapper) { toast('Rapper Name ist Pflichtfeld', false); return; }
+
+        const btn = $('savePlaylistBtn');
+        btn.disabled = true;
+        btn.textContent = 'SPEICHERN...';
+
+        try {
+            const id = $('plId').value;
+            const plData = {
+                name,
+                rapper_name: rapper,
+                notes: $('plNotes').value.trim() || null,
+                is_active: $('plActive').checked,
+            };
+
+            let playlistId;
+            if (id) {
+                await AdminAPI.updatePlaylist(id, plData);
+                playlistId = id;
+                toast('Playlist aktualisiert');
+            } else {
+                plData.share_token = AdminAPI.generateToken();
+                const created = await AdminAPI.createPlaylist(plData);
+                playlistId = created.id;
+                toast('Playlist erstellt');
+            }
+
+            // Set beats
+            await AdminAPI.setPlaylistBeats(playlistId, Array.from(selectedBeatIds));
+
+            playlistModal.classList.remove('open');
+            await loadPlaylists();
+        } catch (e) {
+            toast(e.message || 'Fehler beim Speichern', false);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'SPEICHERN';
+        }
+    };
+
+    // ── Delete Playlist ──
+    window.delPlaylist = (id, name) => {
+        $('delPlaylistId').value = id;
+        $('delPlaylistName').textContent = name;
+        deletePlaylistModal.classList.add('open');
+    };
+
+    $('cancelDeletePlaylistBtn').onclick = () => deletePlaylistModal.classList.remove('open');
+    deletePlaylistModal.addEventListener('click', e => {
+        if (e.target === deletePlaylistModal) deletePlaylistModal.classList.remove('open');
+    });
+
+    $('confirmDeletePlaylistBtn').onclick = async () => {
+        const id = $('delPlaylistId').value;
+        const btn = $('confirmDeletePlaylistBtn');
+        btn.disabled = true;
+        btn.textContent = 'LOESCHEN...';
+        try {
+            await AdminAPI.deletePlaylist(id);
+            toast('Playlist geloescht');
+            deletePlaylistModal.classList.remove('open');
+            await loadPlaylists();
+        } catch (e) {
+            toast(e.message || 'Fehler beim Loeschen', false);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'LOESCHEN';
+        }
+    };
+
+    // ── Playlist Detail View ──
+    window.viewPlaylist = async (id) => {
+        try {
+            const detail = await AdminAPI.getPlaylistDetail(id);
+            const p = detail.playlist;
+            const shareUrl = `${location.origin}${location.pathname.replace('admin.html', '')}playlist.html?t=${p.share_token}`;
+
+            // Switch views
+            $('playlistListView').classList.add('hidden');
+            $('playlistDetailView').classList.remove('hidden');
+
+            $('detailTitle').textContent = p.name;
+            $('detailStatus').innerHTML = p.is_active
+                ? '<span class="badge badge-active">AKTIV</span>'
+                : '<span class="badge badge-inactive">INAKTIV</span>';
+
+            $('detailInfo').innerHTML = `
+                <dt>RAPPER</dt><dd>${esc(p.rapper_name)}</dd>
+                <dt>ERSTELLT</dt><dd>${new Date(p.created_at).toLocaleDateString('de-DE')}</dd>
+                <dt>NOTIZEN</dt><dd>${esc(p.notes || '-')}</dd>
+                <dt>SHARE LINK</dt><dd><span class="share-link" onclick="copyShareLink('${esc(shareUrl)}')" title="${esc(shareUrl)}"><span class="share-link-icon">&#x1F517;</span> ${esc(shareUrl)}</span></dd>
+            `;
+
+            // Ensure playlist beats are in the beats array for playback
+            detail.beats.forEach(pb => {
+                if (pb.beats && !beats.find(b => b.id === pb.beats.id)) {
+                    beats.push(pb.beats);
+                }
+            });
+
+            // Beats + Ratings
+            const ratingMap = {};
+            detail.ratings.forEach(r => { ratingMap[r.beat_id] = r; });
+
+            $('detailBeatCount').textContent = detail.beats.length + ' BEATS';
+
+            if (detail.beats.length === 0) {
+                $('detailBeatsEmpty').classList.remove('hidden');
+                $('detailBeatsTable').classList.add('hidden');
+            } else {
+                $('detailBeatsEmpty').classList.add('hidden');
+                $('detailBeatsTable').classList.remove('hidden');
+                $('detailBeatsTbody').innerHTML = detail.beats.map((pb, i) => {
+                    const b = pb.beats;
+                    const r = ratingMap[pb.beat_id];
+                    return `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td class="title-cell">
+                            ${b ? `<button class="btn-play" id="play-${b.id}" onclick="playBeat('${b.id}')" title="Abspielen">&#9654;</button> ${esc(b.title)}` : '<span style="color:var(--dim)">GELOESCHT</span>'}
+                        </td>
+                        <td>${b?.bpm || '-'}</td>
+                        <td>${esc(b?.key || '-')}</td>
+                        <td>${r ? renderStars(r.rating) : '<span style="color:var(--dim);">—</span>'}</td>
+                        <td style="font-size:10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r?.comment ? esc(r.comment) : '<span style="color:var(--dim);">—</span>'}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // Feedback
+            if (p.feedback_text) {
+                $('detailFeedbackEmpty').classList.add('hidden');
+                $('detailFeedbackContent').classList.remove('hidden');
+                $('detailFeedbackText').textContent = p.feedback_text;
+                $('detailFeedbackMeta').textContent = 'ERHALTEN AM ' + new Date(p.feedback_submitted_at).toLocaleString('de-DE');
+                $('detailFeedbackStatus').textContent = 'ERHALTEN';
+            } else {
+                $('detailFeedbackEmpty').classList.remove('hidden');
+                $('detailFeedbackContent').classList.add('hidden');
+                $('detailFeedbackStatus').textContent = 'AUSSTEHEND';
+            }
+        } catch (e) {
+            toast('Fehler beim Laden: ' + e.message, false);
+        }
+    };
+
+    function renderStars(rating) {
+        if (rating >= 4) {
+            return '<span class="rating-stars" style="color:var(--success);" title="Thumbs Up">&#x1F44D;</span>';
+        } else if (rating <= 2) {
+            return '<span class="rating-stars" style="color:var(--danger);" title="Thumbs Down">&#x1F44E;</span>';
+        }
+        let html = '<span class="rating-stars">';
+        for (let i = 1; i <= 5; i++) {
+            html += i <= rating ? '&#9733;' : '<span class="star-empty">&#9733;</span>';
+        }
+        html += '</span>';
+        return html;
+    }
+
+    $('backToPlaylists').onclick = () => {
+        $('playlistDetailView').classList.add('hidden');
+        $('playlistListView').classList.remove('hidden');
+    };
+
+    // ── Init ──
+    checkSession();
+})();
+</script>
+</body>
+</html>

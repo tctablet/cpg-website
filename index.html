@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>CPG_BEATS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+    <div id="startScreen">
+        <div class="start-inner">
+            <div class="start-brand">CPG_BEATS</div>
+            <div class="start-sub">PRODUCER &middot; BEATS &middot; COLLABS</div>
+            <div class="start-line"></div>
+            <button id="startBtn">&gt; ENTER</button>
+        </div>
+    </div>
+
+    <div class="wood-frame">
+        <div id="app" class="hidden">
+            <header class="hdr">
+                <span class="led" id="led"></span>
+                <span class="hdr-brand">CPG_BEATS</span>
+                <span class="hdr-spacer"></span>
+                <div class="theme-switch">
+                    <button class="theme-btn active" data-t="minimal" title="Minimal"></button>
+                    <button class="theme-btn" data-t="walnut" title="Walnut Console"></button>
+                    <button class="theme-btn" data-t="cream" title="Cream Faceplate"></button>
+                    <button class="theme-btn" data-t="brushed" title="Brushed Metal"></button>
+                </div>
+                <span class="hdr-tag">VOL.01</span>
+                <span class="hdr-sep">/</span>
+                <span class="hdr-tag">2026</span>
+            </header>
+
+            <div class="mod beats-mod">
+                <div class="mod-head">
+                    <span class="mod-title">BEATS</span>
+                    <span class="hdr-spacer"></span>
+                    <span class="mod-info" id="beatCount">0 TRACKS</span>
+                </div>
+                <div class="mod-body beats-list" id="beatsList">
+                    <div class="beats-loading">LOADING...</div>
+                </div>
+            </div>
+
+            <div class="mod wave-mod">
+                <div class="mod-head">
+                    <span class="mod-title">WAVEFORM</span>
+                    <span class="hdr-spacer"></span>
+                    <span class="mod-info" id="resLabel">200 BARS</span>
+                </div>
+                <div class="mod-canvas wave-cv">
+                    <canvas id="waveCanvas"></canvas>
+                </div>
+                <div class="mod-foot">
+                    <span id="curTime">0:00</span>
+                    <span id="durTime">0:00</span>
+                </div>
+            </div>
+
+            <div class="mod transport-mod">
+                <div class="deck-housing">
+                    <div class="deck-led-group">
+                        <div class="deck-led" id="pwrLed"></div>
+                        <span class="deck-led-label">PWR</span>
+                    </div>
+                    <div class="deck-buttons">
+                        <button class="deck-btn" id="rewBtn" title="Rewind">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-rew"></span></span>
+                        </button>
+                        <button class="deck-btn" id="playBtn" title="Play">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-play" id="playIcon"></span></span>
+                        </button>
+                        <button class="deck-btn" id="pauseBtn" title="Pause">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-pause"></span></span>
+                        </button>
+                        <button class="deck-btn" id="stopBtn" title="Stop">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-stop"></span></span>
+                        </button>
+                        <button class="deck-btn" id="ffwBtn" title="Fast Forward">
+                            <span class="btn-shadow"></span>
+                            <span class="btn-edge"></span>
+                            <span class="btn-face"><span class="d-icon d-ffw"></span></span>
+                        </button>
+                    </div>
+                    <div class="deck-led-group">
+                        <div class="deck-led" id="recLed"></div>
+                        <span class="deck-led-label">TAPE</span>
+                    </div>
+                    <div class="deck-counter">
+                        <span class="deck-counter-display" id="tapeCounter">000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mod spec-mod">
+                <div class="mod-head">
+                    <span class="mod-title">SPECTRUM</span>
+                    <span class="hdr-spacer"></span>
+                    <span class="mod-info">REAL-TIME</span>
+                </div>
+                <div class="mod-canvas spec-cv">
+                    <canvas id="specCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="split three-col">
+                <div class="mod">
+                    <div class="mod-head">
+                        <span class="mod-title">TRACK</span>
+                    </div>
+                    <div class="mod-body">
+                        <div class="trk-name">VERDUFTEST</div>
+                        <div class="trk-grid">
+                            <span class="tg-l">BPM</span><span class="tg-v">92</span>
+                            <span class="tg-l">KEY</span><span class="tg-v">Cm</span>
+                            <span class="tg-l">TYPE</span><span class="tg-v">BOOM BAP</span>
+                            <span class="tg-l">FORMAT</span><span class="tg-v">MP3</span>
+                            <span class="tg-l">BITRATE</span><span class="tg-v">320 KBPS</span>
+                            <span class="tg-l">TIME</span><span class="tg-v" id="metaTime">--:--</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mod vu-mod">
+                    <div class="mod-head">
+                        <span class="mod-title">LEVEL</span>
+                        <span class="hdr-spacer"></span>
+                        <span class="mod-info">dBVU</span>
+                    </div>
+                    <div class="mod-canvas vu-cv">
+                        <canvas id="vuCanvas"></canvas>
+                    </div>
+                </div>
+                <div class="mod">
+                    <div class="mod-head">
+                        <span class="mod-title">CONTROLS</span>
+                    </div>
+                    <div class="mod-body sliders">
+                        <div class="sld"><label>RES</label><input type="range" id="sldRes" min="32" max="512" value="200" step="4"><span id="vR">200</span></div>
+                        <div class="sld"><label>GRAIN</label><input type="range" id="sldGrain" min="0" max="100" value="0"><span id="vG">0</span></div>
+                        <div class="sld"><label>DECAY</label><input type="range" id="sldDecay" min="1" max="20" value="8"><span id="vD">8</span></div>
+                        <div class="sld"><label>COLOR</label><input type="range" id="sldColor" min="0" max="100" value="20"><span id="vC">20</span></div>
+                        <div class="sld"><label>VOL</label><input type="range" id="sldVol" min="0" max="100" value="80"><span id="vV">80</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="beats-api.js"></script>
+    <script src="visualizer.js"></script>
+</body>
+</html>

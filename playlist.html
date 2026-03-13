@@ -11,11 +11,11 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg: #1c1917;
-            --panel: #2a2520;
-            --border: #4a423a;
-            --text: #e4d9d1;
-            --dim: #a89a8c;
+            --bg: #2a2a2e;
+            --panel: #38383d;
+            --border: #5a5a60;
+            --text: #ddd;
+            --dim: #888;
             --beat-color: #E8879A;
             --danger: #e74c3c;
             --success: #27ae60;
@@ -38,19 +38,154 @@
         .screen.hidden { display: none; }
 
         /* ══════════════════════════════════════
-           ENVELOPE SCREEN
+           ENVELOPE SCREEN — CSS CASSETTE TAPE
            ══════════════════════════════════════ */
         #envelopeScreen { cursor: pointer; }
-        .envelope-content { text-align: center; }
-        .envelope-wrap {
+        .envelope-content {
+            text-align: center;
             position: relative;
-            display: inline-block;
+        }
+
+        /* ── Cassette Tape ── */
+        .cassette {
+            position: relative;
+            width: 240px; height: 152px;
+            background:
+                repeating-linear-gradient(90deg,
+                    rgba(255,255,255,0.03) 0px, transparent 1px, transparent 2px),
+                linear-gradient(180deg, #6a6a70, #58585e, #50505a);
+            border-radius: 8px 8px 12px 12px;
+            border: 2px solid #7a7a82;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.2),
+                inset 0 -1px 0 rgba(0,0,0,0.3),
+                0 6px 24px rgba(0,0,0,0.5),
+                0 2px 6px rgba(0,0,0,0.3);
+            margin: 0 auto;
             animation: float 3s ease-in-out infinite;
         }
-        .envelope-svg { color: var(--dim); }
+        /* Top edge detail */
+        .cassette::before {
+            content: '';
+            position: absolute;
+            top: 4px; left: 20px; right: 20px; height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            border-radius: 1px;
+        }
+        /* Screw holes */
+        .cassette::after {
+            content: '⊕           ⊕';
+            position: absolute;
+            bottom: 6px; left: 16px; right: 16px;
+            font-size: 8px;
+            color: rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Label area */
+        .cassette-label {
+            position: absolute;
+            top: 10px; left: 16px; right: 16px;
+            height: 64px;
+            background: linear-gradient(180deg, #e8e4df, #ddd8d2, #d5d0ca);
+            border-radius: 3px;
+            border: 1px solid #aaa;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.6),
+                0 1px 2px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        /* Label lines */
+        .cassette-label::before {
+            content: '';
+            position: absolute;
+            top: 12px; left: 10px; right: 10px; bottom: 12px;
+            background:
+                repeating-linear-gradient(0deg,
+                    transparent 0px, transparent 7px,
+                    rgba(100,140,180,0.15) 7px, rgba(100,140,180,0.15) 8px
+                );
+        }
+        .cassette-label-text {
+            font-family: 'Space Mono', monospace;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: #444;
+            position: relative;
+            z-index: 1;
+        }
+        .cassette-label-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 16px;
+            letter-spacing: 0.1em;
+            color: #333;
+            position: relative;
+            z-index: 1;
+            line-height: 1;
+        }
+
+        /* Tape window */
+        .cassette-window {
+            position: absolute;
+            top: 80px; left: 40px; right: 40px;
+            height: 44px;
+            background: #1a1a1e;
+            border-radius: 20px;
+            border: 2px solid #555;
+            box-shadow:
+                inset 0 2px 6px rgba(0,0,0,0.6),
+                0 1px 0 rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 16px;
+            overflow: hidden;
+        }
+        /* Tape strip */
+        .cassette-window::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            height: 10px;
+            transform: translateY(-50%);
+            background: linear-gradient(180deg, #2a1a12, #1e1208, #2a1a12);
+            opacity: 0.6;
+        }
+
+        /* Reels */
+        .cassette-reel {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background:
+                conic-gradient(from 0deg, #ddd, #aaa, #ddd, #aaa, #ddd, #aaa, #ddd);
+            position: relative;
+            z-index: 1;
+            box-shadow:
+                0 0 0 2px #444,
+                inset 0 0 0 4px #1a1a1e,
+                inset 0 0 0 6px #888;
+            animation: spin-reel 3s linear infinite;
+        }
+        .cassette-reel::after {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border-radius: 50%;
+            background:
+                conic-gradient(from 0deg, #666, #888, #666, #888, #666);
+            border: 1px solid #555;
+        }
+
+        /* Notif badge on cassette */
         .notif-badge {
             position: absolute;
-            top: -8px; right: -12px;
+            top: -10px; right: -10px;
             background: var(--beat-color);
             color: #fff;
             font-family: 'Bebas Neue', sans-serif;
@@ -60,24 +195,28 @@
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 0 16px var(--beat-color), 0 2px 8px rgba(0,0,0,0.5);
             animation: pulse-badge 2s ease-in-out infinite;
+            z-index: 5;
         }
+
         .envelope-name {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.8rem;
             letter-spacing: 0.08em;
-            color: var(--text);
+            color: #e0e0e0;
             margin-top: 28px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
         .envelope-sub {
             font-size: 0.65rem;
             letter-spacing: 0.25em;
-            color: var(--dim);
+            color: #999;
             margin-top: 6px;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.3);
         }
         .envelope-hint {
             font-size: 9px;
             letter-spacing: 0.2em;
-            color: var(--border);
+            color: #666;
             margin-top: 32px;
             animation: blink 2s ease-in-out infinite;
         }
@@ -91,88 +230,329 @@
            ══════════════════════════════════════ */
         .instruct-content {
             text-align: center;
-            padding: 20px;
+            padding: 0;
             max-width: 400px;
+            position: relative;
         }
         .instruct-title {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.6rem;
             letter-spacing: 0.1em;
-            margin-bottom: 32px;
-            color: var(--text);
+            margin-bottom: 20px;
+            color: #ccc;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
         .instruct-cards {
             display: flex;
             flex-direction: column;
-            gap: 24px;
-            margin-bottom: 40px;
+            gap: 12px;
+            margin-bottom: 28px;
         }
         .instruct-card {
-            background: var(--panel);
-            border: 2px solid var(--border);
-            padding: 24px 20px;
+            background:
+                repeating-linear-gradient(90deg,
+                    rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.01) 1px,
+                    rgba(0,0,0,0.02) 2px, rgba(255,255,255,0.03) 3px),
+                linear-gradient(180deg, #606068, #55555c, #5a5a62);
+            border: 1px solid #70707a;
+            border-top-color: #80808a;
+            border-bottom-color: #45454c;
+            padding: 20px 18px;
+            border-radius: 3px;
             box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.06),
-                inset 0 -1px 0 rgba(0,0,0,0.3),
-                0 2px 8px rgba(0,0,0,0.5);
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                inset 0 -1px 0 rgba(0,0,0,0.2),
+                0 2px 6px rgba(0,0,0,0.3);
             opacity: 0;
             transform: translateY(20px);
             animation: fade-up 0.5s ease-out forwards;
+            position: relative;
         }
         .instruct-card:nth-child(2) { animation-delay: 0.2s; }
+        /* Card screws */
+        .instruct-card::after {
+            content: '⊕';
+            position: absolute;
+            top: 8px; right: 8px;
+            font-size: 7px;
+            color: rgba(255,255,255,0.1);
+        }
         .instruct-icon {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 16px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
-        .instruct-icon svg { color: var(--dim); }
+
+        /* ── CSS Indicator Lamps (replace SVG thumbs) ── */
+        .retro-lamp {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 35% 35%, #5a5a62, #42424a 60%, #38383e);
+            box-shadow:
+                inset 0 2px 3px rgba(0,0,0,0.4),
+                inset 0 -1px 2px rgba(255,255,255,0.06),
+                0 1px 0 rgba(255,255,255,0.05),
+                0 2px 4px rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .retro-lamp::before {
+            content: '';
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .retro-lamp.lamp-red::before {
+            background:
+                radial-gradient(circle at 40% 35%, rgba(255,255,255,0.3), transparent 50%),
+                radial-gradient(circle, #e74c3c, #a33);
+            box-shadow:
+                inset 0 1px 2px rgba(0,0,0,0.2),
+                0 0 8px rgba(231,76,60,0.5);
+        }
+        .retro-lamp.lamp-green::before {
+            background:
+                radial-gradient(circle at 40% 35%, rgba(255,255,255,0.3), transparent 50%),
+                radial-gradient(circle, #27ae60, #1a7a42);
+            box-shadow:
+                inset 0 1px 2px rgba(0,0,0,0.2),
+                0 0 8px rgba(39,174,96,0.5);
+        }
+        .retro-lamp.lamp-off::before {
+            background:
+                radial-gradient(circle at 40% 35%, rgba(255,255,255,0.08), transparent 50%),
+                radial-gradient(circle, #333, #222);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .lamp-label {
+            font-size: 7px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: #888;
+            margin-top: 4px;
+        }
+        .lamp-group {
+            display: flex;
+            gap: 20px;
+        }
+        .lamp-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ── CSS Mini VU Meter (replace notepad SVG) ── */
+        .retro-vu-icon {
+            width: 52px; height: 36px;
+            background: #d5d5d0;
+            border-radius: 3px;
+            border: 1px solid #999;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.4),
+                0 1px 3px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .retro-vu-icon::before {
+            content: 'VU';
+            position: absolute;
+            top: 3px; left: 0; right: 0;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 8px;
+            color: #666;
+            text-align: center;
+        }
+        .retro-vu-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 6px; left: 50%;
+            width: 22px; height: 1px;
+            background: #333;
+            transform-origin: left center;
+            transform: translateX(-50%) rotate(-20deg);
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+
         .instruct-label {
             font-size: 0.75rem;
             font-weight: 700;
             letter-spacing: 0.15em;
-            color: var(--text);
+            color: #ddd;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.4);
         }
         .instruct-desc {
             font-size: 10px;
-            color: var(--dim);
+            color: #999;
             letter-spacing: 0.08em;
             margin-top: 4px;
         }
+
+        /* ── Skeuomorphic GO Button ── */
         .btn-go {
+            position: relative;
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             letter-spacing: 0.15em;
             color: #fff;
-            background: var(--beat-color);
+            background:
+                linear-gradient(180deg,
+                    rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 2%,
+                    transparent 50%, rgba(0,0,0,0.1) 100%),
+                linear-gradient(180deg, #E8879A, #d87a8e, #cc7085);
             border: none;
-            padding: 14px 60px;
+            border-radius: 4px;
+            padding: 12px 56px;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.08s ease;
             opacity: 0;
             animation: fade-up 0.5s ease-out 0.5s forwards;
+            box-shadow:
+                0 4px 0 #9a5060,
+                0 5px 4px rgba(0,0,0,0.3),
+                0 6px 12px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.25),
+                inset 0 -1px 0 rgba(0,0,0,0.15);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
-        .btn-go:hover { filter: brightness(1.1); }
-        .btn-go:active { transform: scale(0.97); }
+        .btn-go:hover {
+            background:
+                linear-gradient(180deg,
+                    rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.12) 2%,
+                    transparent 50%, rgba(0,0,0,0.08) 100%),
+                linear-gradient(180deg, #ee92a4, #dd8496, #d47a8e);
+        }
+        .btn-go:active {
+            transform: translateY(3px);
+            box-shadow:
+                0 1px 0 #9a5060,
+                0 2px 2px rgba(0,0,0,0.2),
+                inset 0 1px 2px rgba(0,0,0,0.15),
+                inset 0 -1px 0 rgba(255,255,255,0.1);
+        }
+
+        /* ══════════════════════════════════════
+           PANEL MODULE SYSTEM (from main player)
+           ══════════════════════════════════════ */
+        .pl-mod {
+            border: 2px solid var(--border);
+            background: var(--panel);
+            display: flex; flex-direction: column;
+            overflow: hidden; flex-shrink: 0;
+            border-radius: 2px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                inset 0 -1px 0 rgba(0,0,0,0.3),
+                0 2px 8px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .pl-mod::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: 1;
+            border-radius: 2px;
+        }
+        .pl-mod-head {
+            display: flex; align-items: center; gap: 10px;
+            padding: 7px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            position: relative; z-index: 2;
+        }
+        .pl-mod-title {
+            font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 0.22em; color: var(--dim);
+            text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+        }
+        .pl-mod-info {
+            font-size: 0.6rem; letter-spacing: 0.12em; color: var(--border);
+            margin-left: auto;
+        }
+        .pl-mod-body {
+            padding: 12px 14px;
+            position: relative; z-index: 2;
+        }
+        /* Decorative screws */
+        .pl-mod-head::after {
+            content: '⊕';
+            position: absolute;
+            right: 10px; top: 50%; transform: translateY(-50%);
+            font-size: 8px; color: rgba(255,255,255,0.08);
+            letter-spacing: 0;
+        }
+
+        /* Canvas containers */
+        .pl-canvas {
+            position: relative;
+            z-index: 2;
+            background: #222225;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+        }
+        .pl-canvas canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .wave-cv { height: 56px; cursor: pointer; }
+        .spec-cv { height: 100%; }
+        .vu-cv { height: 100%; }
+
+        /* Split row for VU + Track info */
+        .pl-split {
+            display: flex;
+            gap: 8px;
+        }
+        .pl-split > .pl-mod { flex: 1; min-width: 0; }
+        .pl-split > .pl-mod.vu-panel { flex: 1; }
+        .pl-split > .pl-mod.track-panel { flex: 1; }
+
+        /* Track info grid */
+        .pl-trk-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.06em;
+            color: var(--text);
+            line-height: 1.1;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pl-trk-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 2px 8px;
+            font-size: 10px;
+        }
+        .pl-tg-l {
+            color: var(--dim);
+            letter-spacing: 0.1em;
+            font-weight: 700;
+        }
+        .pl-tg-v {
+            color: var(--text);
+            letter-spacing: 0.05em;
+        }
 
         /* ══════════════════════════════════════
            PLAYER SCREEN
            ══════════════════════════════════════ */
         #playerScreen {
             flex-direction: column;
-            padding: 20px;
+            padding: 12px;
             gap: 0;
+            overflow-y: auto;
         }
         .player-wrap {
             width: 100%;
             max-width: 500px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            height: 100%;
-            max-height: 700px;
-            justify-content: center;
+            gap: 6px;
+            margin: auto;
         }
 
         /* Header */
@@ -180,134 +560,159 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--border);
+            padding: 8px 14px;
+            background:
+                repeating-linear-gradient(90deg,
+                    rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.02) 1px,
+                    rgba(0,0,0,0.03) 2px, rgba(255,255,255,0.04) 3px),
+                linear-gradient(180deg, #a8a8ad, #929297, #9a9a9f);
+            border: 1px solid #7a7a80;
+            border-radius: 3px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.25),
+                0 2px 6px rgba(0,0,0,0.4);
             flex-shrink: 0;
         }
         .pl-brand {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.2rem;
             letter-spacing: 0.12em;
+            color: #222;
         }
         .pl-spacer { flex: 1; }
         .pl-tag {
             font-size: 0.6rem;
             letter-spacing: 0.15em;
-            color: var(--dim);
+            color: #555;
+        }
+        .pl-led {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--beat-color);
+            box-shadow: 0 0 4px var(--beat-color), 0 0 8px var(--beat-color);
+            transition: background 0.4s, box-shadow 0.4s;
         }
 
-        /* Beat Overview */
+        /* Beat Overview — Vertical List with Preset Buttons */
+        .beat-list-body { padding: 4px 6px !important; overflow-y: auto; }
         .beat-overview {
             display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 0;
+            flex-direction: column;
+            gap: 2px;
             flex-shrink: 0;
-            flex-wrap: wrap;
         }
         .beat-dot {
-            width: 34px; height: 34px;
-            border-radius: 50%;
-            border: 2px solid var(--dot-color);
+            width: 100%; height: 26px;
+            border-radius: 2px;
+            border: none;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            transition: all 0.15s ease;
             position: relative;
-            background: transparent;
+            background:
+                linear-gradient(180deg,
+                    rgba(255,255,255,0.08) 0%,
+                    rgba(255,255,255,0.02) 40%,
+                    rgba(0,0,0,0.05) 100%),
+                linear-gradient(180deg, #606068, #53535a, #4a4a52);
+            box-shadow:
+                0 2px 0 #2a2a30,
+                0 3px 4px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                inset 0 -1px 0 rgba(0,0,0,0.2);
         }
-        .beat-dot:hover { transform: scale(1.15); }
+        /* Top LED strip */
+        .beat-dot::before {
+            content: '';
+            position: absolute;
+            top: 2px; left: 8px; right: 8px;
+            height: 3px;
+            border-radius: 1px;
+            background: #333;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+        }
+        .beat-dot:hover {
+            background:
+                linear-gradient(180deg,
+                    rgba(255,255,255,0.12) 0%,
+                    rgba(255,255,255,0.04) 40%,
+                    rgba(0,0,0,0.03) 100%),
+                linear-gradient(180deg, #6a6a72, #5c5c64, #53535a);
+        }
+        .beat-dot:active {
+            transform: translateY(1px);
+            box-shadow:
+                0 1px 0 #2a2a30,
+                0 1px 2px rgba(0,0,0,0.2),
+                inset 0 1px 2px rgba(0,0,0,0.2),
+                inset 0 -1px 0 rgba(255,255,255,0.05);
+        }
         .beat-dot.active {
-            transform: scale(1.25);
-            box-shadow: 0 0 16px var(--dot-color);
-            border-width: 3px;
+            background:
+                linear-gradient(180deg,
+                    rgba(255,255,255,0.06) 0%,
+                    transparent 40%,
+                    rgba(0,0,0,0.08) 100%),
+                linear-gradient(180deg, #53535a, #48484e, #404048);
+            transform: translateY(1px);
+            box-shadow:
+                0 1px 0 #2a2a30,
+                0 1px 2px rgba(0,0,0,0.2),
+                inset 0 1px 2px rgba(0,0,0,0.15);
         }
-        .beat-dot.rated-up {
+        .beat-dot.active::before {
             background: var(--dot-color);
+            box-shadow:
+                0 0 6px var(--dot-color),
+                0 0 12px var(--dot-color);
         }
-        .beat-dot.rated-down {
+        .beat-dot.rated-up::before {
             background: var(--dot-color);
-            opacity: 0.35;
+            box-shadow:
+                0 0 4px var(--dot-color),
+                0 0 8px var(--dot-color);
+        }
+        .beat-dot.rated-down::before {
+            background: color-mix(in srgb, var(--dot-color), #000 60%);
+            box-shadow: none;
         }
         .dot-num {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 13px;
-            color: var(--dot-color);
-            line-height: 1;
-        }
-        .beat-dot.rated-up .dot-num { color: var(--bg); }
-        .beat-dot.rated-down .dot-num { color: var(--bg); }
-
-        /* Now Playing */
-        .now-playing {
-            text-align: center;
-            padding: 20px 0;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 0;
-            transition: opacity 0.2s;
-        }
-        .now-playing.switching { opacity: 0; }
-        .np-num {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 3.5rem;
-            color: var(--beat-color);
-            line-height: 1;
-            transition: color 0.4s;
-        }
-        .np-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2.2rem;
-            letter-spacing: 0.08em;
-            color: var(--text);
-            margin-top: 4px;
-            line-height: 1.1;
-        }
-        .np-meta {
-            font-size: 10px;
-            letter-spacing: 0.12em;
-            color: var(--dim);
-            margin-top: 8px;
-        }
-        .np-rating-hint {
+            font-family: 'Space Mono', monospace;
             font-size: 9px;
-            letter-spacing: 0.15em;
-            color: var(--border);
-            margin-top: 16px;
-            transition: opacity 0.3s;
-        }
-
-        /* Progress */
-        .progress-section {
-            flex-shrink: 0;
-            padding: 0 4px;
-        }
-        .progress-bar {
-            height: 5px;
-            background: var(--border);
-            border-radius: 3px;
-            cursor: pointer;
+            color: #999;
+            line-height: 1;
             position: relative;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+            z-index: 1;
+            margin-top: 2px;
+            transition: color 0.3s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            padding: 0 6px;
+            letter-spacing: 0.03em;
         }
-        .progress-fill {
-            height: 100%;
-            background: var(--beat-color);
-            border-radius: 3px;
-            width: 0%;
-            transition: width 0.15s linear, background 0.4s;
+        .beat-dot.active .dot-num { color: #ddd; }
+        .beat-dot.rated-up .dot-num { color: #ccc; }
+        .beat-dot.rated-down .dot-num { color: #666; }
+
+        /* Panel flex proportions */
+        .pl-split > .pl-mod.playlist-panel { flex: 1; min-width: 0; }
+        .pl-split > .pl-mod.playlist-panel .beat-list-body {
+            max-height: 100px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #555 #333;
         }
-        .time-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: var(--dim);
-            letter-spacing: 0.05em;
-            font-variant-numeric: tabular-nums;
-            margin-top: 6px;
-        }
+        .pl-split > .pl-mod.playlist-panel .beat-list-body::-webkit-scrollbar { width: 4px; }
+        .pl-split > .pl-mod.playlist-panel .beat-list-body::-webkit-scrollbar-track { background: #333; }
+        .pl-split > .pl-mod.playlist-panel .beat-list-body::-webkit-scrollbar-thumb { background: #666; border-radius: 2px; }
+        .pl-split > .pl-mod.spec-panel { flex: 1.2; }
+
+
 
         /* ══════════════════════════════════════
            TRANSPORT DECK (Cassette Style)
@@ -315,14 +720,15 @@
         .deck-housing {
             background:
                 repeating-linear-gradient(90deg,
-                    rgba(255,255,255,0.02) 0px, transparent 1px, transparent 3px),
-                linear-gradient(180deg, #3a2a1e, #2a1e14, #332518);
+                    rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.02) 1px,
+                    rgba(0,0,0,0.03) 2px, rgba(255,255,255,0.04) 3px),
+                linear-gradient(180deg, #a8a8ad, #929297, #9a9a9f);
             padding: 14px 16px;
             border-radius: 3px;
-            border: 1px solid #5c3a1e;
+            border: 1px solid #7a7a80;
             box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.08),
-                inset 0 -1px 0 rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.25),
+                inset 0 -1px 0 rgba(0,0,0,0.2),
                 0 3px 12px rgba(0,0,0,0.4);
             display: flex;
             align-items: center;
@@ -357,7 +763,7 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             border-radius: 3px;
-            background: linear-gradient(180deg, #1a1008, #0e0904);
+            background: linear-gradient(180deg, #3a3a3e, #28282c);
         }
         .btn-face {
             display: flex;
@@ -366,16 +772,16 @@
             position: relative;
             width: 48px; height: 36px;
             border-radius: 3px;
-            background: linear-gradient(180deg, #5c4a3a, #4a3a2a, #3e2e20);
+            background: linear-gradient(180deg, #808088, #6a6a72, #5a5a62);
             box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.2),
                 inset 0 -1px 0 rgba(0,0,0,0.3);
             transform: translateY(-4px);
             transition: transform 80ms ease, background 0.15s;
-            color: #c9b2a3;
+            color: #ddd;
         }
         .deck-btn:hover .btn-face {
-            background: linear-gradient(180deg, #6a584a, #5a4a3a, #4e3e30);
+            background: linear-gradient(180deg, #909098, #7a7a82, #6a6a72);
         }
         .deck-btn:active .btn-face {
             transform: translateY(-1px);
@@ -409,7 +815,7 @@
         .deck-btn-label {
             font-size: 7px;
             letter-spacing: 1px;
-            color: #5a4a3a;
+            color: #444;
             text-transform: uppercase;
             transition: color 0.3s;
         }
@@ -462,9 +868,9 @@
         .deck-led {
             width: 8px; height: 8px;
             border-radius: 50%;
-            background: #2a1e14;
+            background: #44444a;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
-            border: 1px solid rgba(0,0,0,0.4);
+            border: 1px solid rgba(0,0,0,0.3);
             transition: all 0.3s;
         }
         .deck-led.on {
@@ -476,15 +882,15 @@
         .deck-led-label {
             font-size: 7px;
             letter-spacing: 1px;
-            color: #5a4a3a;
+            color: #444;
             text-transform: uppercase;
         }
 
         /* Tape counter */
         .deck-counter {
             margin-left: auto;
-            background: #1a1008;
-            border: 1px solid #3a2a1e;
+            background: #28282c;
+            border: 1px solid #4a4a50;
             border-radius: 3px;
             padding: 4px 10px;
             box-shadow: inset 0 1px 4px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05);
@@ -503,11 +909,17 @@
         /* ══════════════════════════════════════
            FEEDBACK SCREEN
            ══════════════════════════════════════ */
+        #feedbackScreen {
+            overflow-y: auto;
+            align-items: flex-start;
+            padding: 20px 0;
+        }
         .feedback-content {
             text-align: center;
             padding: 20px;
             max-width: 500px;
             width: 100%;
+            margin: auto;
         }
         .feedback-title {
             font-family: 'Bebas Neue', sans-serif;
@@ -565,6 +977,72 @@
             text-decoration: underline;
         }
         .feedback-skip:hover { color: var(--dim); }
+
+        /* Rating Summary on Feedback */
+        .rating-summary {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .rating-summary-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.15em;
+            color: var(--dim);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .rating-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .rating-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .rating-item-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            color: var(--dim);
+            min-width: 28px;
+        }
+        .rating-item-title {
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            color: var(--text);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .rating-item-badge {
+            font-size: 16px;
+            min-width: 24px;
+            text-align: center;
+        }
+        .rating-item.unrated {
+            opacity: 0.4;
+        }
+        .btn-back {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            color: var(--dim);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 8px 20px;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .btn-back:hover { border-color: var(--beat-color); color: var(--text); }
 
         /* ══════════════════════════════════════
            DONE SCREEN
@@ -654,39 +1132,54 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
+        @keyframes spin-reel {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
         /* ══════════════════════════════════════
            RESPONSIVE
            ══════════════════════════════════════ */
         @media (max-width: 500px) {
-            .player-wrap { gap: 10px; padding: 0; }
-            .np-num { font-size: 2.5rem; }
-            .np-title { font-size: 1.6rem; }
+            .player-wrap { gap: 4px; padding: 0; }
             .btn-face { width: 44px; height: 34px; }
             .deck-housing { padding: 10px 10px; gap: 6px; }
             .deck-buttons { gap: 2px; }
-            .beat-dot { width: 28px; height: 28px; }
-            .dot-num { font-size: 11px; }
+            .beat-dot { height: 22px; }
+            .dot-num { font-size: 8px; }
             .beat-overview { gap: 6px; }
             .deck-counter { display: none; }
+            .cassette { width: 200px; height: 128px; }
+            .cassette-label { top: 8px; left: 12px; right: 12px; height: 52px; }
+            .cassette-label-title { font-size: 13px; }
+            .cassette-label-text { font-size: 7px; }
+            .cassette-window { top: 66px; left: 30px; right: 30px; height: 38px; }
+            .cassette-reel { width: 24px; height: 24px; }
             .instruct-content { padding: 16px; max-width: 100%; }
             .instruct-card { padding: 16px 14px; }
             .btn-go { padding: 12px 40px; font-size: 1.5rem; }
             .feedback-content { padding: 16px; }
-            .feedback-area { min-height: 100px; }
+            .feedback-area { min-height: 80px; }
             .btn-submit { padding: 10px 36px; font-size: 1.2rem; }
             .envelope-name { font-size: 1.5rem; }
             .envelope-sub { font-size: 0.6rem; }
+            .pl-mod-head { padding: 5px 10px; }
+            .pl-mod-body { padding: 8px 10px; }
+            .pl-mod-title { font-size: 0.6rem; }
+            .player-header { padding: 6px 10px; }
+            .rating-list { max-height: 150px; }
+            .wave-cv { height: 48px; }
+            .spec-cv { height: 100%; }
+            .pl-split { gap: 4px; }
+            .pl-trk-name { font-size: 1.1rem; }
+            .pl-trk-grid { font-size: 9px; }
         }
         @media (max-width: 360px) {
-            #playerScreen { padding: 12px 8px; }
-            .player-wrap { gap: 8px; }
-            .np-num { font-size: 2rem; }
-            .np-title { font-size: 1.3rem; }
-            .np-meta { font-size: 9px; }
-            .beat-dot { width: 24px; height: 24px; }
-            .dot-num { font-size: 10px; }
-            .beat-overview { gap: 4px; padding: 8px 0; }
+            #playerScreen { padding: 8px 4px; }
+            .player-wrap { gap: 3px; }
+            .beat-dot { height: 20px; }
+            .dot-num { font-size: 8px; }
+            .beat-overview { gap: 4px; }
             .btn-face { width: 40px; height: 32px; }
             .deck-housing { padding: 8px 8px; gap: 4px; }
             .deck-led-group { display: none; }
@@ -697,16 +1190,20 @@
             .feedback-title { font-size: 1.6rem; }
             .done-title { font-size: 1.8rem; }
             .done-icon { width: 60px; height: 60px; font-size: 2rem; }
+            .rating-list { max-height: 120px; }
+            .rating-item { padding: 6px 8px; }
+            .wave-cv { height: 40px; }
+            .spec-cv { height: 100%; }
+            .pl-trk-name { font-size: 1rem; }
         }
         /* Landscape phones */
         @media (max-height: 500px) and (orientation: landscape) {
-            .player-wrap { max-height: 100%; gap: 6px; }
-            .now-playing { padding: 8px 0; }
-            .np-num { font-size: 1.8rem; }
-            .np-title { font-size: 1.3rem; }
-            .np-rating-hint { margin-top: 6px; }
-            .beat-overview { padding: 6px 0; }
+            .player-wrap { gap: 3px; }
+            .wave-cv { height: 36px; }
+            .spec-cv { height: 100%; }
+            .beat-overview { padding: 2px 0; }
             .envelope-hint { margin-top: 16px; }
+            .pl-mod-body { padding: 6px 10px; }
         }
     </style>
 </head>
@@ -725,19 +1222,20 @@
 <!-- ENVELOPE -->
 <div class="screen hidden" id="envelopeScreen">
     <div class="envelope-content">
-        <div class="envelope-wrap">
-            <svg class="envelope-svg" viewBox="0 0 140 110" width="160" height="126" fill="none">
-                <rect x="6" y="24" width="128" height="80" rx="6" stroke="currentColor" stroke-width="3" fill="var(--panel)"/>
-                <path d="M6 28 L70 72 L134 28" stroke="currentColor" stroke-width="3" stroke-linejoin="round" fill="none"/>
-                <line x1="38" y1="62" x2="102" y2="62" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-                <line x1="38" y1="74" x2="88" y2="74" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-                <line x1="38" y1="86" x2="72" y2="86" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-            </svg>
+        <div class="cassette">
+            <div class="cassette-label">
+                <span class="cassette-label-text">CPG_BEATS</span>
+                <span class="cassette-label-title" id="cassetteTitle">NEUE BEATS</span>
+            </div>
+            <div class="cassette-window">
+                <div class="cassette-reel"></div>
+                <div class="cassette-reel"></div>
+            </div>
             <div class="notif-badge" id="beatBadge">0</div>
         </div>
         <div class="envelope-name" id="envelopeName"></div>
         <div class="envelope-sub">NEUE BEATS FUER DICH</div>
-        <div class="envelope-hint">ANTIPPEN ZUM OEFFNEN</div>
+        <div class="envelope-hint">ANTIPPEN ZUM ABSPIELEN</div>
     </div>
 </div>
 
@@ -748,24 +1246,27 @@
         <div class="instruct-cards">
             <div class="instruct-card">
                 <div class="instruct-icon">
-                    <!-- Thumbs down -->
-                    <svg viewBox="0 0 24 24" width="36" height="36" style="color: var(--danger);">
-                        <path fill="currentColor" d="M15 3H6c-.8 0-1.5.5-1.8 1.2l-3 7c0 .2-.1.4-.1.6v2c0 1.1.9 2 2 2h6.3l-.9 4.4c-.1.3 0 .6.2.9l1.1 1.1 6.4-6.4c.4-.4.6-.9.6-1.4V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/>
-                    </svg>
-                    <!-- Thumbs up -->
-                    <svg viewBox="0 0 24 24" width="36" height="36" style="color: var(--success);">
-                        <path fill="currentColor" d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l.9-4.4c.1-.3 0-.6-.2-.9l-1.1-1.1-6.4 6.4c-.4.4-.6.9-.6 1.4v7c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7c0-.2.1-.4.1-.6v-2z"/>
-                    </svg>
+                    <div class="lamp-group">
+                        <div class="lamp-unit">
+                            <div class="retro-lamp lamp-red"></div>
+                            <span class="lamp-label">NOPE</span>
+                        </div>
+                        <div class="lamp-unit">
+                            <div class="retro-lamp lamp-off"></div>
+                            <span class="lamp-label">SKIP</span>
+                        </div>
+                        <div class="lamp-unit">
+                            <div class="retro-lamp lamp-green"></div>
+                            <span class="lamp-label">FIRE</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="instruct-label">BEWERTE JEDEN BEAT</div>
                 <div class="instruct-desc">Daumen hoch oder runter</div>
             </div>
             <div class="instruct-card">
                 <div class="instruct-icon">
-                    <!-- Notepad icon -->
-                    <svg viewBox="0 0 24 24" width="36" height="36" style="color: var(--beat-color);">
-                        <path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-                    </svg>
+                    <div class="retro-vu-icon"></div>
                 </div>
                 <div class="instruct-label">SCHREIB DEIN FEEDBACK</div>
                 <div class="instruct-desc">Am Ende kurz zusammenfassen</div>
@@ -778,32 +1279,71 @@
 <!-- PLAYER -->
 <div class="screen hidden" id="playerScreen">
     <div class="player-wrap">
-        <!-- Header -->
+        <!-- Header Bar -->
         <div class="player-header">
+            <div class="pl-led"></div>
             <span class="pl-brand">CPG_BEATS</span>
             <span class="pl-spacer"></span>
             <span class="pl-tag" id="playlistTag"></span>
         </div>
 
-        <!-- Beat Overview -->
-        <div class="beat-overview" id="beatOverview"></div>
-
-        <!-- Now Playing -->
-        <div class="now-playing" id="nowPlaying">
-            <div class="np-num" id="beatNum">#01</div>
-            <div class="np-title" id="beatTitle">-</div>
-            <div class="np-meta" id="beatMeta">-</div>
-            <div class="np-rating-hint" id="ratingHint">HOER REIN UND BEWERTE</div>
+        <!-- Split: Playlist List | Track Info -->
+        <div class="pl-split">
+            <div class="pl-mod playlist-panel">
+                <div class="pl-mod-head">
+                    <span class="pl-mod-title">PLAYLIST</span>
+                    <span class="pl-mod-info" id="overviewInfo">0/0 BEWERTET</span>
+                </div>
+                <div class="pl-mod-body beat-list-body">
+                    <div class="beat-overview" id="beatOverview"></div>
+                </div>
+            </div>
+            <div class="pl-mod track-panel">
+                <div class="pl-mod-head">
+                    <span class="pl-mod-title">TRACK</span>
+                    <span class="pl-mod-info" id="ratingHint">HOER REIN</span>
+                </div>
+                <div class="pl-mod-body" style="padding:8px 12px;">
+                    <div class="pl-trk-name" id="beatTitle">-</div>
+                    <div class="pl-trk-grid">
+                        <span class="pl-tg-l">BPM</span><span class="pl-tg-v" id="metaBpm">--</span>
+                        <span class="pl-tg-l">KEY</span><span class="pl-tg-v" id="metaKey">--</span>
+                        <span class="pl-tg-l">TYPE</span><span class="pl-tg-v" id="metaType">--</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Progress -->
-        <div class="progress-section">
-            <div class="progress-bar" id="progressBar">
-                <div class="progress-fill" id="progressFill"></div>
+        <!-- Split: Spectrum | VU Meter -->
+        <div class="pl-split">
+            <div class="pl-mod spec-panel">
+                <div class="pl-mod-head">
+                    <span class="pl-mod-title">SPECTRUM</span>
+                    <span class="pl-mod-info">REAL-TIME</span>
+                </div>
+                <div class="pl-canvas spec-cv">
+                    <canvas id="specCanvas"></canvas>
+                </div>
             </div>
-            <div class="time-row">
-                <span id="curTime">0:00</span>
-                <span id="durTime">0:00</span>
+            <div class="pl-mod vu-panel">
+                <div class="pl-mod-head">
+                    <span class="pl-mod-title">LEVEL</span>
+                    <span class="pl-mod-info">dBVU</span>
+                </div>
+                <div class="pl-canvas vu-cv">
+                    <canvas id="vuCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Waveform Panel (directly above transport) -->
+        <div class="pl-mod">
+            <div class="pl-mod-head">
+                <span class="pl-mod-title">WAVEFORM</span>
+                <span class="pl-mod-info"><span id="curTime">0:00</span> / <span id="durTime">0:00</span></span>
+            </div>
+            <div class="pl-canvas wave-cv">
+                <canvas id="waveCanvas"></canvas>
             </div>
         </div>
 
@@ -890,7 +1430,22 @@
 <div class="screen hidden" id="feedbackScreen">
     <div class="feedback-content">
         <div class="feedback-title">FAST GESCHAFFT!</div>
-        <div class="feedback-sub">Schreib dein Feedback zur Zusammenarbeit, Wuensche oder Anmerkungen.</div>
+        <div class="feedback-sub">Hier siehst du deine Bewertungen. Du kannst zurueck gehen um sie zu aendern.</div>
+
+        <!-- Rating Summary -->
+        <div class="rating-summary">
+            <div class="pl-mod">
+                <div class="pl-mod-head">
+                    <span class="pl-mod-title">DEINE BEWERTUNGEN</span>
+                    <span class="pl-mod-info" id="ratingSummaryInfo">0/0</span>
+                </div>
+                <div class="pl-mod-body" style="padding: 8px 10px;">
+                    <div class="rating-list" id="ratingList"></div>
+                </div>
+            </div>
+            <button class="btn-back" id="backToPlayerBtn">&larr; ZURUECK ZUM PLAYER</button>
+        </div>
+
         <textarea class="feedback-area" id="feedbackText" placeholder="Dein Feedback hier..."></textarea>
         <button class="btn-submit" id="submitBtn">ABSENDEN</button>
         <button class="feedback-skip" id="skipFeedbackBtn">OHNE FEEDBACK ABSCHLIESSEN</button>
@@ -917,27 +1472,364 @@
     const $ = id => document.getElementById(id);
     const token = new URLSearchParams(location.search).get('t');
 
-    // Beat accent colors — first is always CI pink
+    // Beat accent colors
     const COLORS = [
         '#E8879A', '#f0c040', '#4fc3f7', '#66bb6a', '#ab47bc',
         '#ff7043', '#26c6da', '#ffa726', '#7e57c2', '#ef5350'
     ];
 
     let beats = [];
-    let ratings = {};       // beatId → 'up' | 'down'
+    let ratings = {};
     let playlistData = null;
     let currentIdx = 0;
+    let accentColor = '#E8879A';
 
     const audio = new Audio();
     audio.crossOrigin = 'anonymous';
-    let rafId = null;
+    let isPlaying = false;
 
-    // ── Helpers ──
+    // ══════════════════════════════════════
+    // WEB AUDIO API + VISUALIZER
+    // ══════════════════════════════════════
+    const waveCanvas = $('waveCanvas');
+    const specCanvas = $('specCanvas');
+    const vuCanvas = $('vuCanvas');
+    const wCtx = waveCanvas.getContext('2d');
+    const sCtx = specCanvas.getContext('2d');
+    const vCtx = vuCanvas.getContext('2d');
+
+    let audioCtx, analyser, source, gainNode;
+    let freqData, timeData;
+    let peaks = [];
+    const PEAK_RES = 1024;
+    const MAX_BARS = 256;
+    const smoothBars = new Float32Array(MAX_BARS);
+    const peakBars = new Float32Array(MAX_BARS);
+    const vu = { value: -40, velocity: 0, peak: -40, peakHold: 0 };
+    const resolution = 200;
+    const PINK = { r: 232, g: 135, b: 154 };
+
+    function initAudio() {
+        if (audioCtx) return;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 2048;
+        analyser.smoothingTimeConstant = 0.7;
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = 0.8;
+        source = audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        freqData = new Uint8Array(analyser.frequencyBinCount);
+        timeData = new Float32Array(analyser.fftSize);
+    }
+
+    async function loadPeaks() {
+        try {
+            const res = await fetch(audio.src);
+            const buf = await res.arrayBuffer();
+            const ab = await audioCtx.decodeAudioData(buf);
+            const ch = ab.getChannelData(0);
+            const step = Math.floor(ch.length / PEAK_RES);
+            peaks = [];
+            for (let i = 0; i < PEAK_RES; i++) {
+                let mx = 0;
+                for (let j = 0; j < step; j++) {
+                    const v = Math.abs(ch[i * step + j]);
+                    if (v > mx) mx = v;
+                }
+                peaks.push(mx);
+            }
+        } catch (e) {
+            peaks = [];
+            for (let i = 0; i < PEAK_RES; i++) peaks.push(0.15 + Math.random() * 0.35);
+        }
+    }
+
+    // ── Canvas resize ──
+    function sizeCanvas(cvs) {
+        const dpr = devicePixelRatio;
+        const r = cvs.getBoundingClientRect();
+        if (r.width < 1) return;
+        cvs.width = r.width * dpr;
+        cvs.height = r.height * dpr;
+        cvs.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function resizeCanvases() { sizeCanvas(waveCanvas); sizeCanvas(specCanvas); sizeCanvas(vuCanvas); }
+    window.addEventListener('resize', resizeCanvases);
+
+    // ── Parse hex color ──
+    function hexRgb(hex) {
+        return { r: parseInt(hex.slice(1,3),16), g: parseInt(hex.slice(3,5),16), b: parseInt(hex.slice(5,7),16) };
+    }
+
+    // ── Phosphor glow ──
+    function applyPhosphor(ctx, w, h) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        ctx.globalAlpha = 0.03;
+        ctx.fillStyle = accentColor;
+        ctx.fillRect(0, 0, w, h);
+        ctx.restore();
+    }
+
+    // ══════════════════════════════════════
+    // DRAW WAVEFORM
+    // ══════════════════════════════════════
+    function drawWave() {
+        const dpr = devicePixelRatio;
+        const w = waveCanvas.width / dpr;
+        const h = waveCanvas.height / dpr;
+        if (w < 1) return;
+        wCtx.clearRect(0, 0, w, h);
+        if (!peaks.length) return;
+
+        const bars = resolution;
+        const bw = w / bars;
+        const gap = Math.max(0.5, bw * 0.15);
+        const bw2 = bw - gap;
+        const prog = audio.duration ? audio.currentTime / audio.duration : 0;
+        const ppb = peaks.length / bars;
+
+        for (let i = 0; i < bars; i++) {
+            let pk = 0;
+            const s = Math.floor(i * ppb);
+            const e = Math.floor((i + 1) * ppb);
+            for (let j = s; j < e && j < peaks.length; j++) {
+                if (peaks[j] > pk) pk = peaks[j];
+            }
+            const bh = pk * h * 0.88;
+            const x = i * bw + gap / 2;
+            const y = (h - bh) / 2;
+            const played = (i / bars) < prog;
+            wCtx.fillStyle = played ? '#8ab4c4' : '#444';
+            wCtx.fillRect(x, y, Math.max(0.5, bw2), bh);
+        }
+
+        if (audio.duration) {
+            wCtx.fillStyle = accentColor;
+            wCtx.fillRect(Math.round(prog * w) - 1, 0, 2, h);
+        }
+        applyPhosphor(wCtx, w, h);
+    }
+
+    // ══════════════════════════════════════
+    // DRAW SPECTRUM
+    // ══════════════════════════════════════
+    function drawSpec() {
+        const dpr = devicePixelRatio;
+        const w = specCanvas.width / dpr;
+        const h = specCanvas.height / dpr;
+        if (w < 1) return;
+
+        sCtx.fillStyle = '#1a1a1e';
+        sCtx.fillRect(0, 0, w, h);
+
+        if (analyser && isPlaying) analyser.getByteFrequencyData(freqData);
+
+        const bars = 16;
+        const bw = w / bars;
+        const gap = Math.max(2, bw * 0.3);
+        const bw2 = bw - gap;
+        const decay = 0.82;
+        const attack = 0.3;
+        const bc = analyser ? analyser.frequencyBinCount : 1024;
+        const binsPerBar = Math.max(1, Math.floor(bc * 0.5 / bars));
+        const ac = hexRgb(accentColor);
+
+        for (let i = 0; i < bars; i++) {
+            let sum = 0;
+            if (freqData && isPlaying) {
+                for (let j = 0; j < binsPerBar; j++) {
+                    const idx = i * binsPerBar + j;
+                    if (idx < freqData.length) sum += freqData[idx];
+                }
+            }
+            const raw = (freqData && isPlaying) ? sum / binsPerBar / 255 : 0;
+            // Smooth attack + decay
+            if (raw > smoothBars[i]) smoothBars[i] += (raw - smoothBars[i]) * attack;
+            else smoothBars[i] *= decay;
+            if (smoothBars[i] < 0.002) smoothBars[i] = 0;
+
+            // Peak always >= bar
+            if (smoothBars[i] > peakBars[i]) peakBars[i] = smoothBars[i];
+            else peakBars[i] = Math.max(smoothBars[i], peakBars[i] * 0.992);
+            if (peakBars[i] < 0.002) peakBars[i] = 0;
+
+            const val = smoothBars[i];
+            const bh = val * h * 0.9;
+            const x = i * bw + gap / 2;
+
+            // LED segment style
+            const segH = 3, segGap = 1;
+            const segments = Math.ceil(bh / (segH + segGap));
+            for (let s = 0; s < segments; s++) {
+                const sy = h - (s * (segH + segGap)) - segH;
+                const ratio = s / (h / (segH + segGap));
+                let clr;
+                if (ratio > 0.85) clr = accentColor;
+                else if (ratio > 0.65) clr = `rgb(${Math.round(ac.r*0.7+60)},${Math.round(ac.g*0.7+60)},${Math.round(ac.b*0.7+60)})`;
+                else clr = '#7a8890';
+                sCtx.fillStyle = clr;
+                sCtx.fillRect(x, sy, Math.max(1, bw2), segH);
+            }
+
+            // Peak hold
+            const peakH = peakBars[i] * h * 0.9;
+            if (peakH > 2) {
+                sCtx.fillStyle = accentColor;
+                sCtx.fillRect(x, h - peakH, Math.max(1, bw2), 2);
+            }
+        }
+        applyPhosphor(sCtx, w, h);
+    }
+
+    // ══════════════════════════════════════
+    // DRAW VU METER
+    // ══════════════════════════════════════
+    function drawVU() {
+        const dpr = devicePixelRatio;
+        const w = vuCanvas.width / dpr;
+        const h = vuCanvas.height / dpr;
+        if (w < 1) return;
+        vCtx.clearRect(0, 0, w, h);
+
+        // RMS → dB
+        let rms = 0;
+        if (analyser && isPlaying) {
+            analyser.getFloatTimeDomainData(timeData);
+            let sum = 0;
+            for (let i = 0; i < timeData.length; i++) sum += timeData[i] * timeData[i];
+            rms = Math.sqrt(sum / timeData.length);
+        }
+        const dbRaw = rms > 0.0001 ? 20 * Math.log10(rms) + 3 : -40;
+        const targetDb = Math.max(-40, Math.min(5, dbRaw));
+
+        // Spring-damper physics (heavier damping for smooth needle)
+        vu.velocity += (targetDb - vu.value) * 0.04;
+        vu.velocity *= 0.88;
+        vu.value = Math.max(-40, Math.min(5, vu.value + vu.velocity));
+
+        if (vu.value > vu.peak) { vu.peak = vu.value; vu.peakHold = 60; }
+        else if (vu.peakHold > 0) vu.peakHold--;
+        else vu.peak += (-40 - vu.peak) * 0.04;
+
+        // Geometry
+        const cx = w / 2;
+        const pivotY = h * 1.35;
+        const radius = Math.min(w * 0.44, h * 0.85);
+        const minAngle = Math.PI * 1.18;
+        const maxAngle = Math.PI * 1.82;
+        const range = maxAngle - minAngle;
+
+        const dbPos = { '-20':0, '-10':0.18, '-7':0.30, '-5':0.40, '-3':0.52, '-1':0.65, '0':0.73, '1':0.81, '2':0.88, '3':0.95 };
+        function dbToAngle(db) {
+            const keys = [-20,-10,-7,-5,-3,-1,0,1,2,3];
+            if (db <= -20) return minAngle;
+            if (db >= 3) return minAngle + range * 0.95;
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (db >= keys[i] && db <= keys[i+1]) {
+                    const lo = dbPos[keys[i].toString()];
+                    const hi = dbPos[keys[i+1].toString()];
+                    const frac = (db - keys[i]) / (keys[i+1] - keys[i]);
+                    return minAngle + range * (lo + (hi - lo) * frac);
+                }
+            }
+            return minAngle;
+        }
+
+        // Background
+        vCtx.fillStyle = '#d5d5d0';
+        vCtx.fillRect(0, 0, w, h);
+
+        // Scale arcs
+        const arcW = Math.max(1.5, w * 0.012);
+        vCtx.beginPath();
+        vCtx.arc(cx, pivotY, radius, dbToAngle(-20), dbToAngle(0), false);
+        vCtx.strokeStyle = '#333'; vCtx.lineWidth = arcW; vCtx.lineCap = 'round'; vCtx.stroke();
+        vCtx.beginPath();
+        vCtx.arc(cx, pivotY, radius, dbToAngle(0), dbToAngle(3), false);
+        vCtx.strokeStyle = accentColor; vCtx.lineWidth = arcW; vCtx.stroke();
+        vCtx.lineCap = 'butt';
+
+        // Tick marks
+        const tickFont = Math.max(6, Math.min(10, w * 0.06));
+        vCtx.textBaseline = 'middle';
+        const marks = [[-20,'20'],[-10,'10'],[-7,'7'],[-5,'5'],[-3,'3'],[-1,'1'],[0,'0'],[1,'1'],[2,'2'],[3,'3']];
+        marks.forEach(([db, label]) => {
+            const a = dbToAngle(db);
+            const cos = Math.cos(a), sin = Math.sin(a);
+            const isHot = db >= 0;
+            const isMajor = db===-20||db===-10||db===-5||db===-3||db===0;
+            const tickLen = isMajor ? Math.max(4, w*0.04) : Math.max(3, w*0.025);
+            vCtx.beginPath();
+            vCtx.moveTo(cx+cos*radius, pivotY+sin*radius);
+            vCtx.lineTo(cx+cos*(radius+tickLen), pivotY+sin*(radius+tickLen));
+            vCtx.strokeStyle = isHot ? accentColor : '#222';
+            vCtx.lineWidth = isMajor ? Math.max(1, w*0.005) : Math.max(0.8, w*0.003);
+            vCtx.stroke();
+            const labelR = radius + tickLen + Math.max(5, w*0.03);
+            vCtx.font = `700 ${tickFont}px 'Space Mono',monospace`;
+            vCtx.fillStyle = isHot ? accentColor : '#222';
+            vCtx.textAlign = 'center';
+            vCtx.fillText(label, cx+cos*labelR, pivotY+sin*labelR);
+        });
+
+        // VU label
+        const vuFont = Math.max(8, w * 0.08);
+        vCtx.font = `700 ${vuFont}px 'Bebas Neue',sans-serif`;
+        vCtx.fillStyle = '#222'; vCtx.textAlign = 'center';
+        vCtx.fillText('VU', cx, pivotY - radius * 0.35);
+
+        // Brand
+        const brandFont = Math.max(5, w * 0.035);
+        vCtx.font = `400 ${brandFont}px 'Space Mono',monospace`;
+        vCtx.fillStyle = '#888';
+        vCtx.fillText('CPG_BEATS', cx, pivotY - radius * 0.15);
+
+        // Needle
+        const needleAngle = dbToAngle(vu.value);
+        vCtx.save(); vCtx.translate(cx, pivotY); vCtx.rotate(needleAngle);
+        vCtx.beginPath();
+        vCtx.moveTo(0, -w*0.005); vCtx.lineTo(radius*0.95, 0); vCtx.lineTo(0, w*0.005);
+        vCtx.closePath();
+        const ng = vCtx.createLinearGradient(0, -w*0.01, 0, w*0.01);
+        ng.addColorStop(0, '#222'); ng.addColorStop(0.5, '#555'); ng.addColorStop(1, '#222');
+        vCtx.fillStyle = ng; vCtx.fill(); vCtx.restore();
+
+        // Peak needle
+        if (vu.peak > -35) {
+            const pa = dbToAngle(vu.peak);
+            vCtx.save(); vCtx.translate(cx, pivotY); vCtx.rotate(pa);
+            vCtx.beginPath(); vCtx.moveTo(radius*0.4, 0); vCtx.lineTo(radius*0.92, 0);
+            vCtx.strokeStyle = accentColor + '73';
+            vCtx.lineWidth = Math.max(0.8, w*0.003); vCtx.stroke(); vCtx.restore();
+        }
+
+        // Pivot
+        const pivR = Math.max(3, w * 0.025);
+        vCtx.beginPath(); vCtx.arc(cx, pivotY, pivR, 0, Math.PI*2);
+        const pg = vCtx.createRadialGradient(cx-1, pivotY-1, 1, cx, pivotY, pivR);
+        pg.addColorStop(0, '#bbb'); pg.addColorStop(1, '#444');
+        vCtx.fillStyle = pg; vCtx.fill();
+    }
+
+    // ── Render loop ──
+    function renderVisuals() {
+        drawWave();
+        drawSpec();
+        drawVU();
+        requestAnimationFrame(renderVisuals);
+    }
+
+    // ══════════════════════════════════════
+    // PLAYLIST LOGIC
+    // ══════════════════════════════════════
+
     function fmt(s) {
         if (!s || !isFinite(s)) return '0:00';
-        const m = Math.floor(s / 60);
-        const sec = Math.floor(s % 60);
-        return `${m}:${String(sec).padStart(2, '0')}`;
+        return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
     }
 
     function toast(msg, ok = true) {
@@ -950,6 +1842,9 @@
     function showScreen(name) {
         document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
         $(name + 'Screen').classList.remove('hidden');
+        if (name === 'player') {
+            requestAnimationFrame(resizeCanvases);
+        }
     }
 
     // ── Init ──
@@ -959,41 +1854,27 @@
             showScreen('error');
             return;
         }
-
         try {
             const data = await PlaylistAPI.getByToken(token);
-            if (!data || !data.playlist) {
-                showScreen('error');
-                return;
-            }
+            if (!data || !data.playlist) { showScreen('error'); return; }
 
             playlistData = data.playlist;
             beats = data.beats || [];
-
-            // Load existing ratings
             (data.ratings || []).forEach(r => {
                 ratings[r.beat_id] = r.rating >= 3 ? 'up' : 'down';
             });
 
             document.title = `CPG_BEATS — ${playlistData.name}`;
 
-            // Already submitted → done screen
-            if (playlistData.feedback_text) {
-                showScreen('done');
-                return;
-            }
-
+            if (playlistData.feedback_text) { showScreen('done'); return; }
             if (beats.length === 0) {
                 $('errorMsg').textContent = 'KEINE BEATS IN DIESER PLAYLIST';
-                showScreen('error');
-                return;
+                showScreen('error'); return;
             }
 
-            // Show envelope
             $('beatBadge').textContent = beats.length;
             $('envelopeName').textContent = `Hey ${playlistData.rapper_name}!`;
             showScreen('envelope');
-
         } catch (e) {
             console.error('[Playlist] init:', e);
             $('errorMsg').textContent = 'FEHLER: ' + e.message;
@@ -1001,7 +1882,7 @@
         }
     }
 
-    // ── Envelope Click ──
+    // ── Envelope ──
     $('envelopeScreen').addEventListener('click', () => {
         $('envelopeScreen').classList.add('exit');
         setTimeout(() => showScreen('instruct'), 700);
@@ -1009,31 +1890,57 @@
 
     // ── Let's Go ──
     $('goBtn').addEventListener('click', () => {
+        initAudio();
         showScreen('player');
         $('playlistTag').textContent = playlistData.name;
-        renderOverview();
-        loadBeat(0);
+        requestAnimationFrame(() => {
+            resizeCanvases();
+            renderOverview();
+            loadBeat(0);
+        });
     });
 
     // ── Beat Overview ──
+    // Event delegation — one listener on parent, survives innerHTML rebuilds
+    $('beatOverview').addEventListener('click', (e) => {
+        const dot = e.target.closest('.beat-dot');
+        if (dot && dot.dataset.idx != null) {
+            loadBeat(parseInt(dot.dataset.idx));
+        }
+    });
+
     function renderOverview() {
         $('beatOverview').innerHTML = beats.map((b, i) => {
             const color = COLORS[i % COLORS.length];
             const rated = ratings[b.id];
-            const cls = [
-                'beat-dot',
-                i === currentIdx ? 'active' : '',
-                rated ? 'rated-' + rated : ''
-            ].filter(Boolean).join(' ');
-            return `<div class="${cls}" style="--dot-color:${color}" data-idx="${i}">
-                        <span class="dot-num">${i + 1}</span>
-                    </div>`;
+            const cls = ['beat-dot', i === currentIdx ? 'active' : '', rated ? 'rated-' + rated : ''].filter(Boolean).join(' ');
+            return `<div class="${cls}" style="--dot-color:${color}" data-idx="${i}"><span class="dot-num">${String(i+1).padStart(2,'0')} ${b.title}</span></div>`;
         }).join('');
+        const ratedCount = Object.keys(ratings).length;
+        $('overviewInfo').textContent = `${ratedCount}/${beats.length}`;
+        // Auto-scroll active beat into view
+        const activeDot = $('beatOverview').querySelector('.beat-dot.active');
+        if (activeDot) activeDot.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
 
-        // Click handlers
-        $('beatOverview').querySelectorAll('.beat-dot').forEach(dot => {
-            dot.addEventListener('click', () => {
-                loadBeat(parseInt(dot.dataset.idx));
+    // ── Rating Summary ──
+    function renderRatingSummary() {
+        $('ratingSummaryInfo').textContent = `${Object.keys(ratings).length}/${beats.length}`;
+        $('ratingList').innerHTML = beats.map((b, i) => {
+            const r = ratings[b.id];
+            const badge = r === 'up' ? '👍' : r === 'down' ? '👎' : '—';
+            const cls = r ? '' : ' unrated';
+            return `<div class="rating-item${cls}" data-idx="${i}">
+                <span class="rating-item-num">#${String(i+1).padStart(2,'0')}</span>
+                <span class="rating-item-title">${b.title}</span>
+                <span class="rating-item-badge">${badge}</span>
+            </div>`;
+        }).join('');
+        $('ratingList').querySelectorAll('.rating-item').forEach(item => {
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', () => {
+                showScreen('player');
+                loadBeat(parseInt(item.dataset.idx));
             });
         });
     }
@@ -1041,69 +1948,48 @@
     // ── Load Beat ──
     function loadBeat(idx) {
         if (idx < 0 || idx >= beats.length) return;
+        currentIdx = idx;
+        const beat = beats[idx];
+        accentColor = COLORS[idx % COLORS.length];
+        document.documentElement.style.setProperty('--beat-color', accentColor);
 
-        // Fade transition
-        $('nowPlaying').classList.add('switching');
+        // Update track info
+        $('beatTitle').textContent = beat.title;
+        $('metaBpm').textContent = beat.bpm || '--';
+        $('metaKey').textContent = beat.key || '--';
+        $('metaType').textContent = beat.type || '--';
 
-        setTimeout(() => {
-            currentIdx = idx;
-            const beat = beats[idx];
-            const color = COLORS[idx % COLORS.length];
+        // Counter
+        $('tapeCounter').textContent = `${String(idx+1).padStart(2,'0')}/${String(beats.length).padStart(2,'0')}`;
 
-            // Set accent color
-            document.documentElement.style.setProperty('--beat-color', color);
+        renderOverview();
+        updateThumbsState();
 
-            // Update display
-            $('beatNum').textContent = `#${String(idx + 1).padStart(2, '0')}`;
-            $('beatTitle').textContent = beat.title;
-            $('beatMeta').textContent = [
-                beat.bpm ? beat.bpm + ' BPM' : '',
-                beat.key || '',
-                beat.type || ''
-            ].filter(Boolean).join(' \u00b7 ') || '-';
+        const r = ratings[beat.id];
+        if (r === 'up') $('ratingHint').textContent = 'GEFAELLT DIR';
+        else if (r === 'down') $('ratingHint').textContent = 'NICHT DEIN DING';
+        else $('ratingHint').textContent = 'HOER REIN UND BEWERTE';
 
-            // Counter
-            $('tapeCounter').textContent =
-                `${String(idx + 1).padStart(2, '0')}/${String(beats.length).padStart(2, '0')}`;
-
-            // Update overview
-            renderOverview();
-
-            // Update thumbs state
-            updateThumbsState();
-
-            // Update rating hint
-            const r = ratings[beat.id];
-            if (r === 'up') $('ratingHint').textContent = 'GEFAELLT DIR';
-            else if (r === 'down') $('ratingHint').textContent = 'NICHT DEIN DING';
-            else $('ratingHint').textContent = 'HOER REIN UND BEWERTE';
-
-            // Load audio
-            audio.src = beat.audio_url;
-            audio.play().catch(() => {});
-            setPlayState(true);
-
-            $('nowPlaying').classList.remove('switching');
-        }, 200);
+        // Load audio + peaks
+        audio.src = beat.audio_url;
+        peaks = [];
+        if (audioCtx) loadPeaks();
+        audio.play().catch(() => {});
+        isPlaying = true;
+        setPlayState(true);
     }
 
     // ── Thumbs State ──
     function updateThumbsState() {
-        const beat = beats[currentIdx];
-        const r = ratings[beat.id];
-
+        const r = ratings[beats[currentIdx].id];
         $('thumbDownBtn').classList.remove('rated-down');
         $('thumbUpBtn').classList.remove('rated-up');
-
         if (r === 'up') {
             $('thumbUpBtn').classList.add('rated-up');
-            // Change to skip icon
-            $('thumbUpIcon').outerHTML =
-                '<span class="d-icon d-ffw" id="thumbUpIcon"></span>';
+            $('thumbUpIcon').outerHTML = '<span class="d-icon d-ffw" id="thumbUpIcon"></span>';
             $('thumbUpLabel').textContent = 'SKIP';
         } else if (r === 'down') {
             $('thumbDownBtn').classList.add('rated-down');
-            // Reset thumbs up icon
             resetThumbUpIcon();
         } else {
             resetThumbUpIcon();
@@ -1112,21 +1998,14 @@
 
     function resetThumbUpIcon() {
         const current = $('thumbUpIcon');
-        if (!current || current.tagName === 'svg') {
-            $('thumbUpLabel').textContent = 'FIRE';
-            return;
-        }
+        if (!current || current.tagName === 'svg') { $('thumbUpLabel').textContent = 'FIRE'; return; }
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('class', 'd-icon');
-        svg.setAttribute('id', 'thumbUpIcon');
-        svg.setAttribute('viewBox', '0 0 24 24');
-        svg.setAttribute('width', '15');
-        svg.setAttribute('height', '15');
+        svg.setAttribute('class', 'd-icon'); svg.setAttribute('id', 'thumbUpIcon');
+        svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('width', '15'); svg.setAttribute('height', '15');
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         path.setAttribute('fill', 'currentColor');
         path.setAttribute('d', 'M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.3l.9-4.4c.1-.3 0-.6-.2-.9l-1.1-1.1-6.4 6.4c-.4.4-.6.9-.6 1.4v7c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7c0-.2.1-.4.1-.6v-2z');
-        svg.appendChild(path);
-        current.replaceWith(svg);
+        svg.appendChild(path); current.replaceWith(svg);
         $('thumbUpLabel').textContent = 'FIRE';
     }
 
@@ -1134,37 +2013,17 @@
     $('thumbDownBtn').addEventListener('click', () => {
         const beat = beats[currentIdx];
         ratings[beat.id] = 'down';
-
-        // Save to DB
-        PlaylistAPI.rateBeat(token, beat.id, 1, null).catch(e => {
-            console.error('[Rating]', e);
-            toast('Fehler beim Speichern', false);
-        });
-
+        PlaylistAPI.rateBeat(token, beat.id, 1, null).catch(e => { console.error('[Rating]', e); toast('Fehler beim Speichern', false); });
         updateThumbsState();
         $('ratingHint').textContent = 'NICHT DEIN DING';
-
-        // Auto-skip after brief delay
         setTimeout(() => goNext(), 350);
     });
 
     $('thumbUpBtn').addEventListener('click', () => {
         const beat = beats[currentIdx];
-
-        if (ratings[beat.id] === 'up') {
-            // Already rated → skip
-            goNext();
-            return;
-        }
-
+        if (ratings[beat.id] === 'up') { goNext(); return; }
         ratings[beat.id] = 'up';
-
-        // Save to DB
-        PlaylistAPI.rateBeat(token, beat.id, 5, null).catch(e => {
-            console.error('[Rating]', e);
-            toast('Fehler beim Speichern', false);
-        });
-
+        PlaylistAPI.rateBeat(token, beat.id, 5, null).catch(e => { console.error('[Rating]', e); toast('Fehler beim Speichern', false); });
         updateThumbsState();
         $('ratingHint').textContent = 'GEFAELLT DIR';
     });
@@ -1174,20 +2033,19 @@
         if (currentIdx < beats.length - 1) {
             loadBeat(currentIdx + 1);
         } else {
-            // All beats done → feedback
-            audio.pause();
-            setPlayState(false);
-            cancelAnimationFrame(rafId);
+            audio.pause(); isPlaying = false; setPlayState(false);
+            renderRatingSummary();
             showScreen('feedback');
         }
     }
 
-    function goPrev() {
-        if (currentIdx > 0) loadBeat(currentIdx - 1);
-    }
-
-    $('prevBtn').addEventListener('click', goPrev);
+    $('prevBtn').addEventListener('click', () => { if (currentIdx > 0) loadBeat(currentIdx - 1); });
     $('nextBtn').addEventListener('click', goNext);
+
+    $('backToPlayerBtn').addEventListener('click', () => {
+        showScreen('player');
+        loadBeat(currentIdx);
+    });
 
     // ── Audio Player ──
     function setPlayState(playing) {
@@ -1201,77 +2059,66 @@
         }
     }
 
-    function updateProgress() {
+    // Time update via render loop (RAF) instead of separate loop
+    function updateTimeDisplay() {
         if (audio.duration && isFinite(audio.duration)) {
-            $('progressFill').style.width = `${(audio.currentTime / audio.duration) * 100}%`;
             $('curTime').textContent = fmt(audio.currentTime);
             $('durTime').textContent = fmt(audio.duration);
         }
-        if (!audio.paused) rafId = requestAnimationFrame(updateProgress);
     }
 
     $('playBtn').addEventListener('click', () => {
         if (!beats.length) return;
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
         if (audio.paused) {
             audio.play().catch(() => {});
-            setPlayState(true);
-            updateProgress();
         } else {
             audio.pause();
-            setPlayState(false);
-            cancelAnimationFrame(rafId);
         }
     });
 
-    audio.addEventListener('play', () => {
-        setPlayState(true);
-        updateProgress();
-    });
+    audio.addEventListener('play', () => { isPlaying = true; setPlayState(true); });
+    audio.addEventListener('pause', () => { isPlaying = false; setPlayState(false); });
+    audio.addEventListener('ended', () => { isPlaying = false; setPlayState(false); });
 
-    audio.addEventListener('pause', () => {
-        setPlayState(false);
-        cancelAnimationFrame(rafId);
-    });
-
-    audio.addEventListener('ended', () => {
-        setPlayState(false);
-        cancelAnimationFrame(rafId);
-        $('progressFill').style.width = '0%';
-    });
-
-    // Progress bar seek
-    $('progressBar').addEventListener('click', e => {
-        if (!audio.duration || !isFinite(audio.duration)) return;
-        const rect = e.currentTarget.getBoundingClientRect();
-        const pct = (e.clientX - rect.left) / rect.width;
-        audio.currentTime = pct * audio.duration;
-    });
+    // Waveform seek
+    let seeking = false;
+    function seekWave(e) {
+        if (!audio.duration) return;
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const r = waveCanvas.getBoundingClientRect();
+        audio.currentTime = Math.max(0, Math.min(1, (cx - r.left) / r.width)) * audio.duration;
+    }
+    waveCanvas.addEventListener('pointerdown', e => { seeking = true; seekWave(e); });
+    window.addEventListener('pointermove', e => { if (seeking) seekWave(e); });
+    window.addEventListener('pointerup', () => { seeking = false; });
 
     // ── Feedback Submit ──
     $('submitBtn').addEventListener('click', async () => {
         const text = $('feedbackText').value.trim();
         const btn = $('submitBtn');
-        btn.disabled = true;
-        btn.textContent = 'WIRD GESENDET...';
-
+        btn.disabled = true; btn.textContent = 'WIRD GESENDET...';
         try {
-            if (text) {
-                await PlaylistAPI.submitFeedback(token, text);
-            }
+            if (text) await PlaylistAPI.submitFeedback(token, text);
             showScreen('done');
         } catch (e) {
             toast('Fehler: ' + e.message, false);
         } finally {
-            btn.disabled = false;
-            btn.textContent = 'ABSENDEN';
+            btn.disabled = false; btn.textContent = 'ABSENDEN';
         }
     });
 
-    $('skipFeedbackBtn').addEventListener('click', () => {
-        showScreen('done');
+    $('skipFeedbackBtn').addEventListener('click', () => showScreen('done'));
+
+    // ── Start render loop + init ──
+    requestAnimationFrame(function loop() {
+        drawWave();
+        drawSpec();
+        drawVU();
+        updateTimeDisplay();
+        requestAnimationFrame(loop);
     });
 
-    // ── Start ──
     init();
 })();
 </script>

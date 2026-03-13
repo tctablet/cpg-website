@@ -1679,7 +1679,8 @@
             const beatCount = p.playlist_beats?.[0]?.count || 0;
             const ratingCount = p.beat_ratings?.[0]?.count || 0;
             const hasFeedback = !!p.feedback_text;
-            const shareUrl = `${location.origin}${location.pathname.replace('admin.html', '')}playlist.html?t=${p.share_token}`;
+            const basePath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
+            const shareUrl = `${location.origin}${basePath}playlist.html?t=${p.share_token}`;
             return `
             <tr>
                 <td class="title-cell">${esc(p.name)}</td>
@@ -1863,7 +1864,8 @@
         try {
             const detail = await AdminAPI.getPlaylistDetail(id);
             const p = detail.playlist;
-            const shareUrl = `${location.origin}${location.pathname.replace('admin.html', '')}playlist.html?t=${p.share_token}`;
+            const basePath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
+            const shareUrl = `${location.origin}${basePath}playlist.html?t=${p.share_token}`;
 
             // Switch views
             $('playlistListView').classList.add('hidden');

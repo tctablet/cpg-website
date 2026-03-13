@@ -763,12 +763,8 @@
         </div>
         <div class="panel-body">
             <div class="field">
-                <label>EMAIL</label>
-                <input type="email" id="loginEmail" autocomplete="email">
-            </div>
-            <div class="field">
-                <label>PASSWORD</label>
-                <input type="password" id="loginPass" autocomplete="current-password">
+                <label>CODE</label>
+                <input type="password" id="loginCode" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="off" placeholder="____" style="text-align:center;letter-spacing:12px;font-size:24px;">
             </div>
             <div id="loginError" style="color:var(--danger);font-size:11px;margin-bottom:10px;" class="hidden"></div>
             <button class="btn btn-primary" id="loginBtn" style="width:100%;">LOGIN</button>
@@ -1226,17 +1222,18 @@
     }
 
     // ── Auth ──
+    const ADMIN_CODE = '9950';
+
     async function checkSession() {
-        const session = await AdminAPI.getSession();
-        if (session) {
-            showDashboard(session.user);
+        if (sessionStorage.getItem('cpg_admin') === 'true') {
+            showDashboard();
         }
     }
 
-    function showDashboard(user) {
+    function showDashboard() {
         loginPanel.classList.add('hidden');
         adminDash.classList.remove('hidden');
-        $('adminUser').textContent = user.email;
+        $('adminUser').textContent = 'ADMIN';
         loadBeats();
         loadPlaylistCount();
     }
@@ -1248,43 +1245,31 @@
         } catch (e) { /* ignore */ }
     }
 
-    $('loginBtn').onclick = async () => {
-        const email = $('loginEmail').value.trim();
-        const pass = $('loginPass').value;
+    $('loginBtn').onclick = () => {
+        const code = $('loginCode').value;
         const errEl = $('loginError');
         errEl.classList.add('hidden');
 
-        if (!email || !pass) {
-            errEl.textContent = 'Email und Passwort eingeben';
+        if (code === ADMIN_CODE) {
+            sessionStorage.setItem('cpg_admin', 'true');
+            showDashboard();
+        } else {
+            errEl.textContent = 'Falscher Code';
             errEl.classList.remove('hidden');
-            return;
-        }
-
-        $('loginBtn').disabled = true;
-        $('loginBtn').textContent = 'LOGGING IN...';
-        try {
-            const data = await AdminAPI.login(email, pass);
-            showDashboard(data.user);
-        } catch (e) {
-            errEl.textContent = e.message || 'Login fehlgeschlagen';
-            errEl.classList.remove('hidden');
-        } finally {
-            $('loginBtn').disabled = false;
-            $('loginBtn').textContent = 'LOGIN';
+            $('loginCode').value = '';
+            $('loginCode').focus();
         }
     };
 
-    // Enter key on password field
-    $('loginPass').addEventListener('keydown', e => {
+    $('loginCode').addEventListener('keydown', e => {
         if (e.key === 'Enter') $('loginBtn').click();
     });
 
-    $('logoutBtn').onclick = async () => {
-        await AdminAPI.logout();
+    $('logoutBtn').onclick = () => {
+        sessionStorage.removeItem('cpg_admin');
         adminDash.classList.add('hidden');
         loginPanel.classList.remove('hidden');
-        $('loginEmail').value = '';
-        $('loginPass').value = '';
+        $('loginCode').value = '';
     };
 
     // ── Load beats ──

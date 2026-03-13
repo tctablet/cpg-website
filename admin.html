@@ -825,7 +825,7 @@
             </div>
             <div class="panel-body" style="padding:0;">
                 <div id="beatsTableWrap">
-                    <div class="empty" id="beatsEmpty">KEINE BEATS VORHANDEN</div>
+                    <div class="empty" id="beatsEmpty">LOADING...</div>
                     <div class="table-scroll"><table class="beats-table hidden" id="beatsTable">
                         <thead>
                             <tr>
@@ -1294,6 +1294,7 @@
 
         if (beats.length === 0) {
             table.classList.add('hidden');
+            empty.textContent = 'KEINE BEATS VORHANDEN';
             empty.classList.remove('hidden');
             return;
         }

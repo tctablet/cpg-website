@@ -498,15 +498,12 @@
         }
         .wave-cv { height: 56px; cursor: pointer; }
         .spec-cv { height: 100%; }
-        .vu-cv { height: 100%; }
-
-        /* Split row for VU + Track info */
+        /* Split row */
         .pl-split {
             display: flex;
             gap: 8px;
         }
         .pl-split > .pl-mod { flex: 1; min-width: 0; }
-        .pl-split > .pl-mod.vu-panel { flex: 1; }
         .pl-split > .pl-mod.track-panel { flex: 1; }
 
         /* Track info grid */
@@ -710,7 +707,6 @@
         .pl-split > .pl-mod.playlist-panel .beat-list-body::-webkit-scrollbar { width: 4px; }
         .pl-split > .pl-mod.playlist-panel .beat-list-body::-webkit-scrollbar-track { background: #333; }
         .pl-split > .pl-mod.playlist-panel .beat-list-body::-webkit-scrollbar-thumb { background: #666; border-radius: 2px; }
-        .pl-split > .pl-mod.spec-panel { flex: 1.2; }
 
 
 
@@ -1241,64 +1237,14 @@
             box-shadow: 0 0 3px var(--beat-color), 0 0 8px var(--beat-color);
         }
 
-        /* ══════════════════════════════════════
-           ROCKER SWITCHES
-           ══════════════════════════════════════ */
-        .switch-mod { flex-shrink: 0; }
-        .switches-row { display: flex; justify-content: space-around; gap: 4px; flex-wrap: wrap; }
-        .switch-unit { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .switch-led {
-            width: 5px; height: 5px; border-radius: 50%;
-            background: #333; border: 1px solid rgba(0,0,0,0.3);
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
-            transition: all .2s;
-        }
-        .switch-led.on {
-            background: var(--beat-color);
-            box-shadow: 0 0 4px var(--beat-color), 0 0 10px var(--beat-color);
-        }
-        .switch-housing {
-            width: 26px; height: 40px; border-radius: 3px;
-            background: linear-gradient(180deg, #555, #3a3a3a);
-            border: 1px solid #666;
-            box-shadow: 0 2px 4px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
-            position: relative; cursor: pointer; overflow: hidden;
-        }
-        .switch-rocker {
-            position: absolute; left: 2px; right: 2px; height: 18px;
-            background: linear-gradient(180deg, #888, #555, #666);
-            border-radius: 2px;
-            box-shadow: 0 2px 3px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15);
-            transition: top .15s ease;
-            top: 18px;
-        }
-        .switch-housing.on .switch-rocker { top: 2px; }
-        .switch-label {
-            font-size: 0.45rem; letter-spacing: 0.12em;
-            text-transform: uppercase; color: var(--dim);
-        }
-
-        /* ── Matrix + Switch responsive ── */
+        /* ── Matrix responsive ── */
         @media (max-width: 500px) {
             .matrix-viewport { height: 28px; }
             .matrix-dot { width: 3px; height: 3px; }
             .matrix-housing { padding: 4px 8px; }
-            .switches-row { gap: 8px; justify-content: center; }
-            .switch-unit { gap: 6px; }
-            .switch-housing { width: 36px; height: 52px; }
-            .switch-rocker { height: 24px; top: 24px; }
-            .switch-housing.on .switch-rocker { top: 2px; }
-            .switch-led { width: 7px; height: 7px; }
-            .switch-label { font-size: 0.55rem; }
         }
         @media (max-width: 360px) {
             .matrix-mod { display: none; }
-            .switches-row { gap: 6px; }
-            .switch-housing { width: 32px; height: 46px; }
-            .switch-rocker { height: 20px; top: 22px; }
-            .switch-housing.on .switch-rocker { top: 2px; }
-            .switch-unit { gap: 4px; }
-            .switch-label { font-size: 0.5rem; }
         }
     </style>
 </head>
@@ -1418,67 +1364,14 @@
             </div>
         </div>
 
-        <!-- Split: Spectrum | VU Meter -->
-        <div class="pl-split">
-            <div class="pl-mod spec-panel">
-                <div class="pl-mod-head">
-                    <span class="pl-mod-title">SPECTRUM</span>
-                    <span class="pl-mod-info">REAL-TIME</span>
-                </div>
-                <div class="pl-canvas spec-cv">
-                    <canvas id="specCanvas"></canvas>
-                </div>
-            </div>
-            <div class="pl-mod vu-panel">
-                <div class="pl-mod-head">
-                    <span class="pl-mod-title">LEVEL</span>
-                    <span class="pl-mod-info">dBVU</span>
-                </div>
-                <div class="pl-canvas vu-cv">
-                    <canvas id="vuCanvas"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Rocker Switches — Audio FX -->
-        <div class="pl-mod switch-mod">
+        <!-- Spectrum (full width) -->
+        <div class="pl-mod spec-panel">
             <div class="pl-mod-head">
-                <span class="pl-mod-title">PROCESSOR</span>
-                <span class="pl-mod-info">AUDIO FX</span>
+                <span class="pl-mod-title">SPECTRUM</span>
+                <span class="pl-mod-info">REAL-TIME</span>
             </div>
-            <div class="pl-mod-body" style="padding:8px 10px;">
-                <div class="switches-row">
-                    <div class="switch-unit" data-fx="lofi">
-                        <div class="switch-led"></div>
-                        <div class="switch-housing"><div class="switch-rocker"></div></div>
-                        <div class="switch-label">LO-FI</div>
-                    </div>
-                    <div class="switch-unit" data-fx="bass">
-                        <div class="switch-led"></div>
-                        <div class="switch-housing"><div class="switch-rocker"></div></div>
-                        <div class="switch-label">BASS+</div>
-                    </div>
-                    <div class="switch-unit" data-fx="vinyl">
-                        <div class="switch-led"></div>
-                        <div class="switch-housing"><div class="switch-rocker"></div></div>
-                        <div class="switch-label">VINYL</div>
-                    </div>
-                    <div class="switch-unit" data-fx="slow">
-                        <div class="switch-led"></div>
-                        <div class="switch-housing"><div class="switch-rocker"></div></div>
-                        <div class="switch-label">SLOW</div>
-                    </div>
-                    <div class="switch-unit" data-fx="reverb">
-                        <div class="switch-led"></div>
-                        <div class="switch-housing"><div class="switch-rocker"></div></div>
-                        <div class="switch-label">REVERB</div>
-                    </div>
-                    <div class="switch-unit" data-fx="mono">
-                        <div class="switch-led"></div>
-                        <div class="switch-housing"><div class="switch-rocker"></div></div>
-                        <div class="switch-label">MONO</div>
-                    </div>
-                </div>
+            <div class="pl-canvas spec-cv">
+                <canvas id="specCanvas"></canvas>
             </div>
         </div>
 
@@ -1639,19 +1532,16 @@
     // ══════════════════════════════════════
     const waveCanvas = $('waveCanvas');
     const specCanvas = $('specCanvas');
-    const vuCanvas = $('vuCanvas');
     const wCtx = waveCanvas.getContext('2d');
     const sCtx = specCanvas.getContext('2d');
-    const vCtx = vuCanvas.getContext('2d');
 
     let audioCtx, analyser, source, gainNode;
-    let freqData, timeData;
+    let freqData;
     let peaks = [];
     const PEAK_RES = 1024;
     const MAX_BARS = 256;
     const smoothBars = new Float32Array(MAX_BARS);
     const peakBars = new Float32Array(MAX_BARS);
-    const vu = { value: -40, velocity: 0, peak: -40, peakHold: 0 };
     const resolution = 200;
     const PINK = { r: 232, g: 135, b: 154 };
 
@@ -1668,8 +1558,6 @@
         analyser.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         freqData = new Uint8Array(analyser.frequencyBinCount);
-        timeData = new Float32Array(analyser.fftSize);
-        initFxNodes();
     }
 
     // ══════════════════════════════════════
@@ -1761,151 +1649,6 @@
     // Default marquee
     updateMarquee('   CPG_BEATS   ---   PLAYLIST   ---   ');
 
-    // ══════════════════════════════════════
-    // AUDIO EFFECTS (rocker switches)
-    // ══════════════════════════════════════
-    let fxNodes = null;
-    const fxState = { lofi: false, bass: false, vinyl: false, slow: false, reverb: false, mono: false };
-
-    function createReverbIR(ctx, duration, decay) {
-        const rate = ctx.sampleRate;
-        const length = rate * duration;
-        const impulse = ctx.createBuffer(2, length, rate);
-        for (let ch = 0; ch < 2; ch++) {
-            const data = impulse.getChannelData(ch);
-            for (let i = 0; i < length; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
-            }
-        }
-        return impulse;
-    }
-
-    function initFxNodes() {
-        if (!audioCtx) return;
-        const lofi = audioCtx.createBiquadFilter();
-        lofi.type = 'lowpass'; lofi.frequency.value = 3000; lofi.Q.value = 0.7;
-
-        const bass = audioCtx.createBiquadFilter();
-        bass.type = 'peaking'; bass.frequency.value = 80; bass.gain.value = 12; bass.Q.value = 1.0;
-
-        const reverb = audioCtx.createConvolver();
-        reverb.buffer = createReverbIR(audioCtx, 2.0, 2.5);
-        const reverbWet = audioCtx.createGain(); reverbWet.gain.value = 0.35;
-        const reverbDry = audioCtx.createGain(); reverbDry.gain.value = 1.0;
-
-        const monoSplitter = audioCtx.createChannelSplitter(2);
-        const monoMerger = audioCtx.createChannelMerger(2);
-        const monoGainL = audioCtx.createGain(); monoGainL.gain.value = 0.5;
-        const monoGainR = audioCtx.createGain(); monoGainR.gain.value = 0.5;
-
-        const vinylGain = audioCtx.createGain(); vinylGain.gain.value = 0.06;
-        const vinylFilter = audioCtx.createBiquadFilter();
-        vinylFilter.type = 'highpass'; vinylFilter.frequency.value = 800;
-
-        fxNodes = {
-            lofi, bass,
-            reverb, reverbWet, reverbDry,
-            monoSplitter, monoMerger, monoGainL, monoGainR,
-            vinylGain, vinylFilter,
-            vinylSource: null
-        };
-    }
-
-    function rebuildFxChain() {
-        if (!audioCtx || !fxNodes) return;
-        try { analyser.disconnect(); } catch(e) {}
-        try { fxNodes.lofi.disconnect(); } catch(e) {}
-        try { fxNodes.bass.disconnect(); } catch(e) {}
-        try { fxNodes.reverb.disconnect(); } catch(e) {}
-        try { fxNodes.reverbWet.disconnect(); } catch(e) {}
-        try { fxNodes.reverbDry.disconnect(); } catch(e) {}
-        try { fxNodes.monoSplitter.disconnect(); } catch(e) {}
-        try { fxNodes.monoMerger.disconnect(); } catch(e) {}
-        try { fxNodes.monoGainL.disconnect(); } catch(e) {}
-        try { fxNodes.monoGainR.disconnect(); } catch(e) {}
-
-        let currentNode = analyser;
-        if (fxState.lofi) { currentNode.connect(fxNodes.lofi); currentNode = fxNodes.lofi; }
-        if (fxState.bass) { currentNode.connect(fxNodes.bass); currentNode = fxNodes.bass; }
-        if (fxState.reverb) {
-            currentNode.connect(fxNodes.reverbDry);
-            currentNode.connect(fxNodes.reverb);
-            fxNodes.reverb.connect(fxNodes.reverbWet);
-            if (fxState.mono) {
-                fxNodes.reverbDry.connect(fxNodes.monoSplitter);
-                fxNodes.reverbWet.connect(fxNodes.monoSplitter);
-            } else {
-                fxNodes.reverbDry.connect(gainNode);
-                fxNodes.reverbWet.connect(gainNode);
-            }
-            if (!fxState.mono) return;
-            currentNode = fxNodes.monoSplitter;
-            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 0);
-            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 1);
-            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 0);
-            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 1);
-            fxNodes.monoMerger.connect(gainNode);
-            return;
-        }
-        if (fxState.mono) {
-            currentNode.connect(fxNodes.monoSplitter);
-            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 0);
-            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 1);
-            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 0);
-            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 1);
-            fxNodes.monoMerger.connect(gainNode);
-            return;
-        }
-        currentNode.connect(gainNode);
-    }
-
-    function toggleFx(name) {
-        fxState[name] = !fxState[name];
-        if (!audioCtx || !fxNodes) return;
-
-        if (name === 'slow') {
-            audio.playbackRate = fxState.slow ? 0.85 : 1.0;
-            return;
-        }
-        if (name === 'vinyl') {
-            if (fxState.vinyl) {
-                const bufSize = 2 * audioCtx.sampleRate;
-                const noiseBuf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
-                const data = noiseBuf.getChannelData(0);
-                for (let i = 0; i < bufSize; i++) {
-                    data[i] = (Math.random() > 0.97 ? (Math.random() * 2 - 1) : 0) * 0.5;
-                    if (Math.random() > 0.8) data[i] += (Math.random() * 2 - 1) * 0.1;
-                }
-                const src = audioCtx.createBufferSource();
-                src.buffer = noiseBuf; src.loop = true;
-                src.connect(fxNodes.vinylFilter);
-                fxNodes.vinylFilter.connect(fxNodes.vinylGain);
-                fxNodes.vinylGain.connect(gainNode);
-                src.start();
-                fxNodes.vinylSource = src;
-            } else {
-                if (fxNodes.vinylSource) {
-                    try { fxNodes.vinylSource.stop(); } catch(e) {}
-                    fxNodes.vinylSource = null;
-                }
-                try { fxNodes.vinylGain.disconnect(); } catch(e) {}
-            }
-            return;
-        }
-        rebuildFxChain();
-    }
-
-    // ── Rocker switch click handlers ──
-    document.querySelectorAll('.switch-housing').forEach(sw => {
-        sw.addEventListener('click', () => {
-            const unit = sw.closest('.switch-unit');
-            const fx = unit.dataset.fx;
-            const on = sw.classList.toggle('on');
-            unit.querySelector('.switch-led').classList.toggle('on', on);
-            toggleFx(fx);
-        });
-    });
-
     async function loadPeaks() {
         try {
             const res = await fetch(audio.src);
@@ -1937,7 +1680,7 @@
         cvs.height = r.height * dpr;
         cvs.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    function resizeCanvases() { sizeCanvas(waveCanvas); sizeCanvas(specCanvas); sizeCanvas(vuCanvas); }
+    function resizeCanvases() { sizeCanvas(waveCanvas); sizeCanvas(specCanvas); }
     window.addEventListener('resize', resizeCanvases);
 
     // ── Parse hex color ──
@@ -2066,143 +1809,6 @@
         applyPhosphor(sCtx, w, h);
     }
 
-    // ══════════════════════════════════════
-    // DRAW VU METER
-    // ══════════════════════════════════════
-    function drawVU() {
-        const dpr = devicePixelRatio;
-        const w = vuCanvas.width / dpr;
-        const h = vuCanvas.height / dpr;
-        if (w < 1) return;
-        vCtx.clearRect(0, 0, w, h);
-
-        // RMS → dB
-        let rms = 0;
-        if (analyser && isPlaying) {
-            analyser.getFloatTimeDomainData(timeData);
-            let sum = 0;
-            for (let i = 0; i < timeData.length; i++) sum += timeData[i] * timeData[i];
-            rms = Math.sqrt(sum / timeData.length);
-        }
-        const dbRaw = rms > 0.0001 ? 20 * Math.log10(rms) + 3 : -40;
-        const targetDb = Math.max(-40, Math.min(5, dbRaw));
-
-        // Spring-damper physics (heavier damping for smooth needle)
-        vu.velocity += (targetDb - vu.value) * 0.04;
-        vu.velocity *= 0.88;
-        vu.value = Math.max(-40, Math.min(5, vu.value + vu.velocity));
-
-        if (vu.value > vu.peak) { vu.peak = vu.value; vu.peakHold = 60; }
-        else if (vu.peakHold > 0) vu.peakHold--;
-        else vu.peak += (-40 - vu.peak) * 0.04;
-
-        // Geometry
-        const cx = w / 2;
-        const pivotY = h * 1.35;
-        const radius = Math.min(w * 0.44, h * 0.85);
-        const minAngle = Math.PI * 1.18;
-        const maxAngle = Math.PI * 1.82;
-        const range = maxAngle - minAngle;
-
-        const dbPos = { '-20':0, '-10':0.18, '-7':0.30, '-5':0.40, '-3':0.52, '-1':0.65, '0':0.73, '1':0.81, '2':0.88, '3':0.95 };
-        function dbToAngle(db) {
-            const keys = [-20,-10,-7,-5,-3,-1,0,1,2,3];
-            if (db <= -20) return minAngle;
-            if (db >= 3) return minAngle + range * 0.95;
-            for (let i = 0; i < keys.length - 1; i++) {
-                if (db >= keys[i] && db <= keys[i+1]) {
-                    const lo = dbPos[keys[i].toString()];
-                    const hi = dbPos[keys[i+1].toString()];
-                    const frac = (db - keys[i]) / (keys[i+1] - keys[i]);
-                    return minAngle + range * (lo + (hi - lo) * frac);
-                }
-            }
-            return minAngle;
-        }
-
-        // Background
-        vCtx.fillStyle = '#d5d5d0';
-        vCtx.fillRect(0, 0, w, h);
-
-        // Scale arcs
-        const arcW = Math.max(1.5, w * 0.012);
-        vCtx.beginPath();
-        vCtx.arc(cx, pivotY, radius, dbToAngle(-20), dbToAngle(0), false);
-        vCtx.strokeStyle = '#333'; vCtx.lineWidth = arcW; vCtx.lineCap = 'round'; vCtx.stroke();
-        vCtx.beginPath();
-        vCtx.arc(cx, pivotY, radius, dbToAngle(0), dbToAngle(3), false);
-        vCtx.strokeStyle = accentColor; vCtx.lineWidth = arcW; vCtx.stroke();
-        vCtx.lineCap = 'butt';
-
-        // Tick marks
-        const tickFont = Math.max(6, Math.min(10, w * 0.06));
-        vCtx.textBaseline = 'middle';
-        const marks = [[-20,'20'],[-10,'10'],[-7,'7'],[-5,'5'],[-3,'3'],[-1,'1'],[0,'0'],[1,'1'],[2,'2'],[3,'3']];
-        marks.forEach(([db, label]) => {
-            const a = dbToAngle(db);
-            const cos = Math.cos(a), sin = Math.sin(a);
-            const isHot = db >= 0;
-            const isMajor = db===-20||db===-10||db===-5||db===-3||db===0;
-            const tickLen = isMajor ? Math.max(4, w*0.04) : Math.max(3, w*0.025);
-            vCtx.beginPath();
-            vCtx.moveTo(cx+cos*radius, pivotY+sin*radius);
-            vCtx.lineTo(cx+cos*(radius+tickLen), pivotY+sin*(radius+tickLen));
-            vCtx.strokeStyle = isHot ? accentColor : '#222';
-            vCtx.lineWidth = isMajor ? Math.max(1, w*0.005) : Math.max(0.8, w*0.003);
-            vCtx.stroke();
-            const labelR = radius + tickLen + Math.max(5, w*0.03);
-            vCtx.font = `700 ${tickFont}px 'Space Mono',monospace`;
-            vCtx.fillStyle = isHot ? accentColor : '#222';
-            vCtx.textAlign = 'center';
-            vCtx.fillText(label, cx+cos*labelR, pivotY+sin*labelR);
-        });
-
-        // VU label
-        const vuFont = Math.max(8, w * 0.08);
-        vCtx.font = `700 ${vuFont}px 'Bebas Neue',sans-serif`;
-        vCtx.fillStyle = '#222'; vCtx.textAlign = 'center';
-        vCtx.fillText('VU', cx, pivotY - radius * 0.35);
-
-        // Brand
-        const brandFont = Math.max(5, w * 0.035);
-        vCtx.font = `400 ${brandFont}px 'Space Mono',monospace`;
-        vCtx.fillStyle = '#888';
-        vCtx.fillText('CPG_BEATS', cx, pivotY - radius * 0.15);
-
-        // Needle
-        const needleAngle = dbToAngle(vu.value);
-        vCtx.save(); vCtx.translate(cx, pivotY); vCtx.rotate(needleAngle);
-        vCtx.beginPath();
-        vCtx.moveTo(0, -w*0.005); vCtx.lineTo(radius*0.95, 0); vCtx.lineTo(0, w*0.005);
-        vCtx.closePath();
-        const ng = vCtx.createLinearGradient(0, -w*0.01, 0, w*0.01);
-        ng.addColorStop(0, '#222'); ng.addColorStop(0.5, '#555'); ng.addColorStop(1, '#222');
-        vCtx.fillStyle = ng; vCtx.fill(); vCtx.restore();
-
-        // Peak needle
-        if (vu.peak > -35) {
-            const pa = dbToAngle(vu.peak);
-            vCtx.save(); vCtx.translate(cx, pivotY); vCtx.rotate(pa);
-            vCtx.beginPath(); vCtx.moveTo(radius*0.4, 0); vCtx.lineTo(radius*0.92, 0);
-            vCtx.strokeStyle = accentColor + '73';
-            vCtx.lineWidth = Math.max(0.8, w*0.003); vCtx.stroke(); vCtx.restore();
-        }
-
-        // Pivot
-        const pivR = Math.max(3, w * 0.025);
-        vCtx.beginPath(); vCtx.arc(cx, pivotY, pivR, 0, Math.PI*2);
-        const pg = vCtx.createRadialGradient(cx-1, pivotY-1, 1, cx, pivotY, pivR);
-        pg.addColorStop(0, '#bbb'); pg.addColorStop(1, '#444');
-        vCtx.fillStyle = pg; vCtx.fill();
-    }
-
-    // ── Render loop ──
-    function renderVisuals() {
-        drawWave();
-        drawSpec();
-        drawVU();
-        requestAnimationFrame(renderVisuals);
-    }
 
     // ══════════════════════════════════════
     // PLAYLIST LOGIC
@@ -2357,7 +1963,7 @@
 
         // Load audio + peaks
         audio.src = beat.audio_url;
-        audio.playbackRate = fxState.slow ? 0.85 : 1.0;
+        audio.playbackRate = 1.0;
         peaks = [];
         if (audioCtx) loadPeaks();
         audio.play().catch(() => {});
@@ -2500,7 +2106,6 @@
     requestAnimationFrame(function loop() {
         drawWave();
         drawSpec();
-        drawVU();
         updateTimeDisplay();
         requestAnimationFrame(loop);
     });

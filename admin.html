@@ -600,6 +600,133 @@
         /* Pad bottom for player bar */
         body.has-player { padding-bottom: 76px; }
 
+        /* ── Mobile Preview ── */
+        .preview-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 600;
+            align-items: center;
+            justify-content: center;
+        }
+        .preview-overlay.open { display: flex; }
+        .phone-frame {
+            position: relative;
+            width: 375px;
+            height: 720px;
+            background: #111;
+            border-radius: 40px;
+            border: 4px solid #333;
+            box-shadow:
+                inset 0 0 0 2px #222,
+                0 0 0 2px #444,
+                0 20px 60px rgba(0,0,0,0.6);
+            padding: 50px 10px 50px 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .phone-notch {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 28px;
+            background: #111;
+            border-radius: 0 0 16px 16px;
+            border: 2px solid #222;
+            border-top: none;
+        }
+        .phone-notch::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            border: 1px solid #333;
+        }
+        .phone-screen {
+            flex: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+        }
+        .phone-screen iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .phone-home {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: #444;
+            border-radius: 2px;
+        }
+        .preview-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: #888;
+            background: rgba(40,40,40,0.9);
+            border: 1px solid #555;
+            padding: 8px 16px;
+            cursor: pointer;
+            z-index: 610;
+            transition: color 0.15s, border-color 0.15s;
+        }
+        .preview-close:hover {
+            color: #fff;
+            border-color: #999;
+        }
+        .preview-label {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            color: #555;
+        }
+        .pb-preview {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border: 1px solid var(--accent2);
+            background: transparent;
+            color: var(--accent2);
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.15s, color 0.15s;
+        }
+        .pb-preview:hover {
+            background: var(--accent2);
+            color: #111;
+        }
+        @media (max-width: 640px) {
+            .pb-preview { padding: 4px 8px; font-size: 8px; }
+            .phone-frame { width: 320px; height: 620px; border-radius: 32px; padding: 44px 8px 44px 8px; }
+        }
+        @media (max-width: 400px) {
+            .pb-preview { display: none; }
+        }
+
         @media (max-width: 640px) {
             .pb-info { max-width: 100px; }
             .pb-open { padding: 4px 8px; font-size: 8px; }
@@ -1113,6 +1240,20 @@
     </div>
     <span class="pb-time" id="pbTime">0:00 / 0:00</span>
     <a class="pb-open" id="pbOpenPlayer" href="#" target="_blank" title="Im Player oeffnen">PLAYER &#x2197;</a>
+    <button class="pb-preview" id="pbPreviewBtn" title="Mobile Preview">PREVIEW</button>
+</div>
+
+<!-- ══════ MOBILE PREVIEW ══════ -->
+<div class="preview-overlay" id="previewOverlay">
+    <button class="preview-close" id="previewClose">ESC &times;</button>
+    <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+            <iframe id="previewFrame" src="about:blank"></iframe>
+        </div>
+        <div class="phone-home"></div>
+    </div>
+    <div class="preview-label">MOBILE PREVIEW — 375 &times; 667</div>
 </div>
 
 <!-- Toast -->
@@ -1638,6 +1779,35 @@
         const rect = e.currentTarget.getBoundingClientRect();
         const pct = (e.clientX - rect.left) / rect.width;
         audio.currentTime = pct * audio.duration;
+    });
+
+    // ── Mobile Preview ──
+    const previewOverlay = $('previewOverlay');
+    const previewFrame = $('previewFrame');
+
+    $('pbPreviewBtn').onclick = () => {
+        if (!currentPlayId) { toast('Zuerst einen Beat abspielen', false); return; }
+        previewFrame.src = `index.html?beat=${currentPlayId}`;
+        previewOverlay.classList.add('open');
+    };
+
+    $('previewClose').onclick = () => {
+        previewOverlay.classList.remove('open');
+        previewFrame.src = 'about:blank';
+    };
+
+    previewOverlay.addEventListener('click', e => {
+        if (e.target === previewOverlay) {
+            previewOverlay.classList.remove('open');
+            previewFrame.src = 'about:blank';
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && previewOverlay.classList.contains('open')) {
+            previewOverlay.classList.remove('open');
+            previewFrame.src = 'about:blank';
+        }
     });
 
     // ── Tabs ──

@@ -1821,7 +1821,7 @@
         try {
             // Pick up to 3 random beats with audio
             const withAudio = beats.filter(b => b.audio_url);
-            if (withAudio.length === 0) { toast('Keine Beats mit Audio', false); return; }
+            if (withAudio.length === 0) { toast('Keine Beats mit Audio', false); simBtn.disabled = false; simBtn.textContent = 'SIMULIEREN'; return; }
             const shuffled = [...withAudio].sort(() => Math.random() - 0.5);
             const picked = shuffled.slice(0, 3);
 
@@ -1840,7 +1840,8 @@
             const url = `${basePath}playlist.html?t=${token}`;
 
             if (isMobile) {
-                window.open(url, '_blank');
+                location.href = url;
+                return;
             } else {
                 previewFrame.src = url;
                 previewOverlay.classList.add('open');

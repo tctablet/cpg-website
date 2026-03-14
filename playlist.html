@@ -1205,6 +1205,95 @@
             .envelope-hint { margin-top: 16px; }
             .pl-mod-body { padding: 6px 10px; }
         }
+
+        /* ══════════════════════════════════════
+           LED DOT MATRIX
+           ══════════════════════════════════════ */
+        .matrix-mod { flex-shrink: 0; border: none !important; box-shadow: none !important; background: transparent !important; }
+        .matrix-mod::before { display: none !important; }
+        .matrix-housing {
+            background: #0a0a08;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.03);
+            padding: 6px 10px;
+            overflow: hidden;
+            border-radius: 3px;
+        }
+        .matrix-viewport { overflow: hidden; height: 36px; position: relative; }
+        .matrix-track {
+            display: flex; gap: 2px; position: absolute;
+            top: 50%; transform: translateY(-50%);
+            animation: pl-marquee 12s linear infinite;
+        }
+        @keyframes pl-marquee {
+            0% { transform: translateY(-50%) translateX(0); }
+            100% { transform: translateY(-50%) translateX(-50%); }
+        }
+        .matrix-col { display: flex; flex-direction: column; gap: 2px; }
+        .matrix-dot {
+            width: 4px; height: 4px; border-radius: 50%;
+            background: #1a1a10;
+            box-shadow: inset 0 0 1px rgba(0,0,0,.5);
+        }
+        .matrix-dot.on {
+            background: var(--beat-color);
+            box-shadow: 0 0 3px var(--beat-color), 0 0 8px var(--beat-color);
+        }
+
+        /* ══════════════════════════════════════
+           ROCKER SWITCHES
+           ══════════════════════════════════════ */
+        .switch-mod { flex-shrink: 0; }
+        .switches-row { display: flex; justify-content: space-around; gap: 4px; flex-wrap: wrap; }
+        .switch-unit { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .switch-led {
+            width: 5px; height: 5px; border-radius: 50%;
+            background: #333; border: 1px solid rgba(0,0,0,0.3);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+            transition: all .2s;
+        }
+        .switch-led.on {
+            background: var(--beat-color);
+            box-shadow: 0 0 4px var(--beat-color), 0 0 10px var(--beat-color);
+        }
+        .switch-housing {
+            width: 26px; height: 40px; border-radius: 3px;
+            background: linear-gradient(180deg, #555, #3a3a3a);
+            border: 1px solid #666;
+            box-shadow: 0 2px 4px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
+            position: relative; cursor: pointer; overflow: hidden;
+        }
+        .switch-rocker {
+            position: absolute; left: 2px; right: 2px; height: 18px;
+            background: linear-gradient(180deg, #888, #555, #666);
+            border-radius: 2px;
+            box-shadow: 0 2px 3px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15);
+            transition: top .15s ease;
+            top: 18px;
+        }
+        .switch-housing.on .switch-rocker { top: 2px; }
+        .switch-label {
+            font-size: 0.45rem; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--dim);
+        }
+
+        /* ── Matrix + Switch responsive ── */
+        @media (max-width: 500px) {
+            .matrix-viewport { height: 28px; }
+            .matrix-dot { width: 3px; height: 3px; }
+            .matrix-housing { padding: 4px 8px; }
+            .switch-housing { width: 24px; height: 36px; }
+            .switch-rocker { height: 16px; top: 16px; }
+            .switch-housing.on .switch-rocker { top: 2px; }
+            .switch-label { font-size: 0.4rem; }
+        }
+        @media (max-width: 360px) {
+            .matrix-mod { display: none; }
+            .switch-housing { width: 22px; height: 32px; }
+            .switch-rocker { height: 14px; top: 14px; }
+            .switch-housing.on .switch-rocker { top: 2px; }
+            .switches-row { gap: 3px; }
+            .switch-unit { gap: 3px; }
+        }
     </style>
 </head>
 <body>
@@ -1279,6 +1368,15 @@
 <!-- PLAYER -->
 <div class="screen hidden" id="playerScreen">
     <div class="player-wrap">
+        <!-- LED Dot Matrix Marquee -->
+        <div class="pl-mod matrix-mod">
+            <div class="matrix-housing">
+                <div class="matrix-viewport">
+                    <div class="matrix-track" id="matrixTrack"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Header Bar -->
         <div class="player-header">
             <div class="pl-led"></div>
@@ -1332,6 +1430,48 @@
                 </div>
                 <div class="pl-canvas vu-cv">
                     <canvas id="vuCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rocker Switches — Audio FX -->
+        <div class="pl-mod switch-mod">
+            <div class="pl-mod-head">
+                <span class="pl-mod-title">PROCESSOR</span>
+                <span class="pl-mod-info">AUDIO FX</span>
+            </div>
+            <div class="pl-mod-body" style="padding:8px 10px;">
+                <div class="switches-row">
+                    <div class="switch-unit" data-fx="lofi">
+                        <div class="switch-led"></div>
+                        <div class="switch-housing"><div class="switch-rocker"></div></div>
+                        <div class="switch-label">LO-FI</div>
+                    </div>
+                    <div class="switch-unit" data-fx="bass">
+                        <div class="switch-led"></div>
+                        <div class="switch-housing"><div class="switch-rocker"></div></div>
+                        <div class="switch-label">BASS+</div>
+                    </div>
+                    <div class="switch-unit" data-fx="vinyl">
+                        <div class="switch-led"></div>
+                        <div class="switch-housing"><div class="switch-rocker"></div></div>
+                        <div class="switch-label">VINYL</div>
+                    </div>
+                    <div class="switch-unit" data-fx="slow">
+                        <div class="switch-led"></div>
+                        <div class="switch-housing"><div class="switch-rocker"></div></div>
+                        <div class="switch-label">SLOW</div>
+                    </div>
+                    <div class="switch-unit" data-fx="reverb">
+                        <div class="switch-led"></div>
+                        <div class="switch-housing"><div class="switch-rocker"></div></div>
+                        <div class="switch-label">REVERB</div>
+                    </div>
+                    <div class="switch-unit" data-fx="mono">
+                        <div class="switch-led"></div>
+                        <div class="switch-housing"><div class="switch-rocker"></div></div>
+                        <div class="switch-label">MONO</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1523,7 +1663,242 @@
         gainNode.connect(audioCtx.destination);
         freqData = new Uint8Array(analyser.frequencyBinCount);
         timeData = new Float32Array(analyser.fftSize);
+        initFxNodes();
     }
+
+    // ══════════════════════════════════════
+    // LED DOT MATRIX MARQUEE
+    // ══════════════════════════════════════
+    const MATRIX_FONT = {
+        ' ':[0,0,0,0,0],
+        '-':[0,0b00100,0b00100,0b00100,0],
+        '.':[0,0,0,0,0b00100],
+        '/':[0b00001,0b00010,0b00100,0b01000,0b10000],
+        '0':[0b01110,0b10001,0b10001,0b10001,0b01110],
+        '1':[0b00100,0b01100,0b00100,0b00100,0b01110],
+        '2':[0b01110,0b10001,0b00110,0b01000,0b11111],
+        '3':[0b01110,0b10001,0b00110,0b10001,0b01110],
+        '4':[0b10010,0b10010,0b11111,0b00010,0b00010],
+        '5':[0b11111,0b10000,0b11110,0b00001,0b11110],
+        '6':[0b01110,0b10000,0b11110,0b10001,0b01110],
+        '7':[0b11111,0b00001,0b00010,0b00100,0b00100],
+        '8':[0b01110,0b10001,0b01110,0b10001,0b01110],
+        '9':[0b01110,0b10001,0b01111,0b00001,0b01110],
+        'A':[0b01110,0b10001,0b11111,0b10001,0b10001],
+        'B':[0b11110,0b10001,0b11110,0b10001,0b11110],
+        'C':[0b01110,0b10001,0b10000,0b10001,0b01110],
+        'D':[0b11110,0b10001,0b10001,0b10001,0b11110],
+        'E':[0b11111,0b10000,0b11110,0b10000,0b11111],
+        'F':[0b11111,0b10000,0b11110,0b10000,0b10000],
+        'G':[0b01110,0b10000,0b10011,0b10001,0b01110],
+        'H':[0b10001,0b10001,0b11111,0b10001,0b10001],
+        'I':[0b01110,0b00100,0b00100,0b00100,0b01110],
+        'J':[0b00111,0b00010,0b00010,0b10010,0b01100],
+        'K':[0b10010,0b10100,0b11000,0b10100,0b10010],
+        'L':[0b10000,0b10000,0b10000,0b10000,0b11111],
+        'M':[0b10001,0b11011,0b10101,0b10001,0b10001],
+        'N':[0b10001,0b11001,0b10101,0b10011,0b10001],
+        'O':[0b01110,0b10001,0b10001,0b10001,0b01110],
+        'P':[0b11110,0b10001,0b11110,0b10000,0b10000],
+        'Q':[0b01110,0b10001,0b10101,0b10010,0b01101],
+        'R':[0b11110,0b10001,0b11110,0b10010,0b10001],
+        'S':[0b01111,0b10000,0b01110,0b00001,0b11110],
+        'T':[0b11111,0b00100,0b00100,0b00100,0b00100],
+        'U':[0b10001,0b10001,0b10001,0b10001,0b01110],
+        'V':[0b10001,0b10001,0b10001,0b01010,0b00100],
+        'W':[0b10001,0b10001,0b10101,0b11011,0b10001],
+        'X':[0b10001,0b01010,0b00100,0b01010,0b10001],
+        'Y':[0b10001,0b01010,0b00100,0b00100,0b00100],
+        'Z':[0b11111,0b00010,0b00100,0b01000,0b11111],
+        '_':[0,0,0,0,0b11111],
+        '#':[0b01010,0b11111,0b01010,0b11111,0b01010]
+    };
+    const MATRIX_ROWS = 7, MATRIX_COLS = 5;
+    const matrixTrack = $('matrixTrack');
+
+    function matrixCharCols(ch) {
+        const g = MATRIX_FONT[ch.toUpperCase()] || MATRIX_FONT[' '];
+        const cols = [];
+        for (let c = 0; c < MATRIX_COLS; c++) {
+            const col = [];
+            for (let r = 0; r < MATRIX_ROWS; r++) {
+                if (r === 0 || r === 6) { col.push(false); continue; }
+                col.push(!!(g[r - 1] & (1 << (4 - c))));
+            }
+            cols.push(col);
+        }
+        cols.push(new Array(MATRIX_ROWS).fill(false));
+        return cols;
+    }
+
+    function updateMarquee(text) {
+        if (!matrixTrack) return;
+        const allCols = [];
+        for (const ch of text) {
+            allCols.push(...matrixCharCols(ch));
+        }
+        const full = [...allCols, ...allCols];
+        let html = '';
+        full.forEach(col => {
+            html += '<div class="matrix-col">';
+            col.forEach(on => {
+                html += '<div class="matrix-dot' + (on ? ' on' : '') + '"></div>';
+            });
+            html += '</div>';
+        });
+        matrixTrack.innerHTML = html;
+        const totalW = full.length * 6;
+        matrixTrack.style.width = totalW + 'px';
+        matrixTrack.style.animationDuration = (allCols.length * 6 / 40) + 's';
+    }
+
+    // Default marquee
+    updateMarquee('   CPG_BEATS   ---   PLAYLIST   ---   ');
+
+    // ══════════════════════════════════════
+    // AUDIO EFFECTS (rocker switches)
+    // ══════════════════════════════════════
+    let fxNodes = null;
+    const fxState = { lofi: false, bass: false, vinyl: false, slow: false, reverb: false, mono: false };
+
+    function createReverbIR(ctx, duration, decay) {
+        const rate = ctx.sampleRate;
+        const length = rate * duration;
+        const impulse = ctx.createBuffer(2, length, rate);
+        for (let ch = 0; ch < 2; ch++) {
+            const data = impulse.getChannelData(ch);
+            for (let i = 0; i < length; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+            }
+        }
+        return impulse;
+    }
+
+    function initFxNodes() {
+        if (!audioCtx) return;
+        const lofi = audioCtx.createBiquadFilter();
+        lofi.type = 'lowpass'; lofi.frequency.value = 3000; lofi.Q.value = 0.7;
+
+        const bass = audioCtx.createBiquadFilter();
+        bass.type = 'peaking'; bass.frequency.value = 80; bass.gain.value = 12; bass.Q.value = 1.0;
+
+        const reverb = audioCtx.createConvolver();
+        reverb.buffer = createReverbIR(audioCtx, 2.0, 2.5);
+        const reverbWet = audioCtx.createGain(); reverbWet.gain.value = 0.35;
+        const reverbDry = audioCtx.createGain(); reverbDry.gain.value = 1.0;
+
+        const monoSplitter = audioCtx.createChannelSplitter(2);
+        const monoMerger = audioCtx.createChannelMerger(2);
+        const monoGainL = audioCtx.createGain(); monoGainL.gain.value = 0.5;
+        const monoGainR = audioCtx.createGain(); monoGainR.gain.value = 0.5;
+
+        const vinylGain = audioCtx.createGain(); vinylGain.gain.value = 0.06;
+        const vinylFilter = audioCtx.createBiquadFilter();
+        vinylFilter.type = 'highpass'; vinylFilter.frequency.value = 800;
+
+        fxNodes = {
+            lofi, bass,
+            reverb, reverbWet, reverbDry,
+            monoSplitter, monoMerger, monoGainL, monoGainR,
+            vinylGain, vinylFilter,
+            vinylSource: null
+        };
+    }
+
+    function rebuildFxChain() {
+        if (!audioCtx || !fxNodes) return;
+        try { analyser.disconnect(); } catch(e) {}
+        try { fxNodes.lofi.disconnect(); } catch(e) {}
+        try { fxNodes.bass.disconnect(); } catch(e) {}
+        try { fxNodes.reverb.disconnect(); } catch(e) {}
+        try { fxNodes.reverbWet.disconnect(); } catch(e) {}
+        try { fxNodes.reverbDry.disconnect(); } catch(e) {}
+        try { fxNodes.monoSplitter.disconnect(); } catch(e) {}
+        try { fxNodes.monoMerger.disconnect(); } catch(e) {}
+        try { fxNodes.monoGainL.disconnect(); } catch(e) {}
+        try { fxNodes.monoGainR.disconnect(); } catch(e) {}
+
+        let currentNode = analyser;
+        if (fxState.lofi) { currentNode.connect(fxNodes.lofi); currentNode = fxNodes.lofi; }
+        if (fxState.bass) { currentNode.connect(fxNodes.bass); currentNode = fxNodes.bass; }
+        if (fxState.reverb) {
+            currentNode.connect(fxNodes.reverbDry);
+            currentNode.connect(fxNodes.reverb);
+            fxNodes.reverb.connect(fxNodes.reverbWet);
+            if (fxState.mono) {
+                fxNodes.reverbDry.connect(fxNodes.monoSplitter);
+                fxNodes.reverbWet.connect(fxNodes.monoSplitter);
+            } else {
+                fxNodes.reverbDry.connect(gainNode);
+                fxNodes.reverbWet.connect(gainNode);
+            }
+            if (!fxState.mono) return;
+            currentNode = fxNodes.monoSplitter;
+            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 0);
+            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 1);
+            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 0);
+            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 1);
+            fxNodes.monoMerger.connect(gainNode);
+            return;
+        }
+        if (fxState.mono) {
+            currentNode.connect(fxNodes.monoSplitter);
+            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 0);
+            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 1);
+            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 0);
+            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 1);
+            fxNodes.monoMerger.connect(gainNode);
+            return;
+        }
+        currentNode.connect(gainNode);
+    }
+
+    function toggleFx(name) {
+        fxState[name] = !fxState[name];
+        if (!audioCtx || !fxNodes) return;
+
+        if (name === 'slow') {
+            audio.playbackRate = fxState.slow ? 0.85 : 1.0;
+            return;
+        }
+        if (name === 'vinyl') {
+            if (fxState.vinyl) {
+                const bufSize = 2 * audioCtx.sampleRate;
+                const noiseBuf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+                const data = noiseBuf.getChannelData(0);
+                for (let i = 0; i < bufSize; i++) {
+                    data[i] = (Math.random() > 0.97 ? (Math.random() * 2 - 1) : 0) * 0.5;
+                    if (Math.random() > 0.8) data[i] += (Math.random() * 2 - 1) * 0.1;
+                }
+                const src = audioCtx.createBufferSource();
+                src.buffer = noiseBuf; src.loop = true;
+                src.connect(fxNodes.vinylFilter);
+                fxNodes.vinylFilter.connect(fxNodes.vinylGain);
+                fxNodes.vinylGain.connect(gainNode);
+                src.start();
+                fxNodes.vinylSource = src;
+            } else {
+                if (fxNodes.vinylSource) {
+                    try { fxNodes.vinylSource.stop(); } catch(e) {}
+                    fxNodes.vinylSource = null;
+                }
+                try { fxNodes.vinylGain.disconnect(); } catch(e) {}
+            }
+            return;
+        }
+        rebuildFxChain();
+    }
+
+    // ── Rocker switch click handlers ──
+    document.querySelectorAll('.switch-housing').forEach(sw => {
+        sw.addEventListener('click', () => {
+            const unit = sw.closest('.switch-unit');
+            const fx = unit.dataset.fx;
+            const on = sw.classList.toggle('on');
+            unit.querySelector('.switch-led').classList.toggle('on', on);
+            toggleFx(fx);
+        });
+    });
 
     async function loadPeaks() {
         try {
@@ -1959,6 +2334,10 @@
         $('metaKey').textContent = beat.key || '--';
         $('metaType').textContent = beat.type || '--';
 
+        // Update marquee
+        const bpmStr = beat.bpm ? (' --- ' + beat.bpm + ' BPM') : '';
+        updateMarquee('   ' + beat.title.toUpperCase() + bpmStr + '   ---   CPG_BEATS   ---   ');
+
         // Counter
         $('tapeCounter').textContent = `${String(idx+1).padStart(2,'0')}/${String(beats.length).padStart(2,'0')}`;
 
@@ -1972,6 +2351,7 @@
 
         // Load audio + peaks
         audio.src = beat.audio_url;
+        audio.playbackRate = fxState.slow ? 0.85 : 1.0;
         peaks = [];
         if (audioCtx) loadPeaks();
         audio.play().catch(() => {});

@@ -1407,7 +1407,7 @@
     async function loadPlaylistCount() {
         try {
             const pls = await AdminAPI.getAllPlaylists();
-            $('statPlaylists').textContent = pls.length;
+            $('statPlaylists').textContent = pls.filter(p => !p.name.startsWith('_SIM_')).length;
         } catch (e) { /* ignore */ }
     }
 
@@ -1839,6 +1839,11 @@
             const basePath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
             const url = `${basePath}playlist.html?t=${token}`;
 
+            // Auto-delete sim playlist after 60s
+            setTimeout(() => {
+                AdminAPI.deletePlaylist(pl.id).catch(() => {});
+            }, 60000);
+
             if (isMobile) {
                 location.href = url;
                 return;
@@ -1897,7 +1902,10 @@
         const table = $('playlistsTable');
         const empty = $('playlistsEmpty');
 
-        if (playlists.length === 0) {
+        // Hide simulation playlists
+        const visible = playlists.filter(p => !p.name.startsWith('_SIM_'));
+
+        if (visible.length === 0) {
             table.classList.add('hidden');
             empty.classList.remove('hidden');
             return;
@@ -1905,7 +1913,7 @@
 
         empty.classList.add('hidden');
         table.classList.remove('hidden');
-        tbody.innerHTML = playlists.map(p => {
+        tbody.innerHTML = visible.map(p => {
             const beatCount = p.playlist_beats?.[0]?.count || 0;
             const ratingCount = p.beat_ratings?.[0]?.count || 0;
             const hasFeedback = !!p.feedback_text;

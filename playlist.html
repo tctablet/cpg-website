@@ -1666,10 +1666,10 @@
     // ── Canvas resize ──
     function sizeCanvas(cvs) {
         const dpr = devicePixelRatio;
-        const r = cvs.getBoundingClientRect();
+        const r = cvs.parentElement.getBoundingClientRect();
         if (r.width < 1) return;
-        cvs.width = r.width * dpr;
-        cvs.height = r.height * dpr;
+        cvs.width = Math.ceil(r.width * dpr);
+        cvs.height = Math.ceil(r.height * dpr);
         cvs.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     function resizeCanvases() { sizeCanvas(waveCanvas); sizeCanvas(specCanvas); }
@@ -1716,7 +1716,7 @@
             }
             const x = i * bw;
             const barW = bw - gap;
-            const bh = pk * h * 0.88;
+            const bh = Math.max(2, pk * h * 0.88);
             const y = (h - bh) / 2;
             const played = (i / bars) < prog;
             wCtx.fillStyle = played ? '#8ab4c4' : '#444';
@@ -1822,7 +1822,7 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
         $(name + 'Screen').classList.remove('hidden');
         if (name === 'player') {
-            requestAnimationFrame(resizeCanvases);
+            requestAnimationFrame(() => requestAnimationFrame(resizeCanvases));
         }
     }
 
@@ -1872,11 +1872,11 @@
         initAudio();
         showScreen('player');
         $('playlistTag').textContent = playlistData.name;
-        requestAnimationFrame(() => {
+        requestAnimationFrame(() => requestAnimationFrame(() => {
             resizeCanvases();
             renderOverview();
             loadBeat(0);
-        });
+        }));
     });
 
     // ── Beat Overview ──

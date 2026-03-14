@@ -701,30 +701,54 @@
             letter-spacing: 0.2em;
             color: #555;
         }
-        .pb-preview {
+        .sim-section {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sim-select {
             font-family: 'Space Mono', monospace;
-            font-size: 9px;
+            font-size: 11px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            flex: 1;
+            min-width: 0;
+        }
+        .sim-select:focus {
+            border-color: var(--accent2);
+            outline: none;
+        }
+        .btn-simulate {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            padding: 6px 12px;
+            padding: 8px 16px;
             border: 1px solid var(--accent2);
             background: transparent;
             color: var(--accent2);
             cursor: pointer;
             flex-shrink: 0;
+            white-space: nowrap;
             transition: background 0.15s, color 0.15s;
         }
-        .pb-preview:hover {
+        .btn-simulate:hover {
             background: var(--accent2);
             color: #111;
         }
-        @media (max-width: 640px) {
-            .pb-preview { padding: 4px 8px; font-size: 8px; }
-            .phone-frame { width: 320px; height: 620px; border-radius: 32px; padding: 44px 8px 44px 8px; }
+        .btn-simulate:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
         }
-        @media (max-width: 400px) {
-            .pb-preview { display: none; }
+        @media (max-width: 640px) {
+            .phone-frame { width: 320px; height: 620px; border-radius: 32px; padding: 44px 8px 44px 8px; }
+            .sim-section { flex-wrap: wrap; }
+            .sim-select { width: 100%; }
         }
 
         @media (max-width: 640px) {
@@ -968,6 +992,21 @@
                         <tbody id="beatsTbody"></tbody>
                     </table></div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Playlist Simulator -->
+        <div class="panel">
+            <div class="panel-head">
+                <span class="panel-title">PLAYLIST SIMULIEREN</span>
+                <span class="admin-spacer"></span>
+                <span class="panel-info">SO SEHEN ES DIE RAPPER</span>
+            </div>
+            <div class="sim-section">
+                <select class="sim-select" id="simPlaylistSelect">
+                    <option value="">— PLAYLIST WAEHLEN —</option>
+                </select>
+                <button class="btn-simulate" id="simBtn" disabled>SIMULIEREN</button>
             </div>
         </div>
     </div>
@@ -1240,7 +1279,6 @@
     </div>
     <span class="pb-time" id="pbTime">0:00 / 0:00</span>
     <a class="pb-open" id="pbOpenPlayer" href="#" target="_blank" title="Im Player oeffnen">PLAYER &#x2197;</a>
-    <button class="pb-preview" id="pbPreviewBtn" title="Mobile Preview">PREVIEW</button>
 </div>
 
 <!-- ══════ MOBILE PREVIEW ══════ -->
@@ -1377,6 +1415,7 @@
         $('adminUser').textContent = 'ADMIN';
         loadBeats();
         loadPlaylistCount();
+        loadPlaylists();
     }
 
     async function loadPlaylistCount() {
@@ -1781,15 +1820,32 @@
         audio.currentTime = pct * audio.duration;
     });
 
-    // ── Mobile Preview ──
+    // ── Playlist Simulator ──
     const previewOverlay = $('previewOverlay');
     const previewFrame = $('previewFrame');
+    const simSelect = $('simPlaylistSelect');
+    const simBtn = $('simBtn');
 
-    $('pbPreviewBtn').onclick = () => {
-        if (!currentPlayId) { toast('Zuerst einen Beat abspielen', false); return; }
-        previewFrame.src = `index.html?beat=${currentPlayId}`;
+    simSelect.onchange = () => {
+        simBtn.disabled = !simSelect.value;
+    };
+
+    simBtn.onclick = async () => {
+        const token = simSelect.value;
+        if (!token) return;
+        const basePath = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
+        previewFrame.src = `${basePath}playlist.html?t=${token}`;
         previewOverlay.classList.add('open');
     };
+
+    // Populate simulator dropdown when playlists load
+    function updateSimSelect() {
+        const current = simSelect.value;
+        simSelect.innerHTML = '<option value="">— PLAYLIST WAEHLEN —</option>' +
+            playlists.map(p => `<option value="${esc(p.share_token)}">${esc(p.name)} — ${esc(p.rapper_name)}</option>`).join('');
+        if (current) simSelect.value = current;
+        simBtn.disabled = !simSelect.value;
+    }
 
     $('previewClose').onclick = () => {
         previewOverlay.classList.remove('open');
@@ -1831,6 +1887,7 @@
     async function loadPlaylists() {
         playlists = await AdminAPI.getAllPlaylists();
         renderPlaylists();
+        updateSimSelect();
     }
 
     function renderPlaylists() {

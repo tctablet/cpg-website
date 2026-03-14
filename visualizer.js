@@ -184,6 +184,272 @@
         g.putImageData(d, 0, 0);
     }
 
+    // ══════════════════════════════════════
+    // LED DOT MATRIX
+    // ══════════════════════════════════════
+    const MATRIX_FONT = {
+        ' ':[0,0,0,0,0],
+        '-':[0,0b00100,0b00100,0b00100,0],
+        '.':[0,0,0,0,0b00100],
+        '/':[0b00001,0b00010,0b00100,0b01000,0b10000],
+        '0':[0b01110,0b10001,0b10001,0b10001,0b01110],
+        '1':[0b00100,0b01100,0b00100,0b00100,0b01110],
+        '2':[0b01110,0b10001,0b00110,0b01000,0b11111],
+        '3':[0b01110,0b10001,0b00110,0b10001,0b01110],
+        '4':[0b10010,0b10010,0b11111,0b00010,0b00010],
+        '5':[0b11111,0b10000,0b11110,0b00001,0b11110],
+        '6':[0b01110,0b10000,0b11110,0b10001,0b01110],
+        '7':[0b11111,0b00001,0b00010,0b00100,0b00100],
+        '8':[0b01110,0b10001,0b01110,0b10001,0b01110],
+        '9':[0b01110,0b10001,0b01111,0b00001,0b01110],
+        'A':[0b01110,0b10001,0b11111,0b10001,0b10001],
+        'B':[0b11110,0b10001,0b11110,0b10001,0b11110],
+        'C':[0b01110,0b10001,0b10000,0b10001,0b01110],
+        'D':[0b11110,0b10001,0b10001,0b10001,0b11110],
+        'E':[0b11111,0b10000,0b11110,0b10000,0b11111],
+        'F':[0b11111,0b10000,0b11110,0b10000,0b10000],
+        'G':[0b01110,0b10000,0b10011,0b10001,0b01110],
+        'H':[0b10001,0b10001,0b11111,0b10001,0b10001],
+        'I':[0b01110,0b00100,0b00100,0b00100,0b01110],
+        'J':[0b00111,0b00010,0b00010,0b10010,0b01100],
+        'K':[0b10010,0b10100,0b11000,0b10100,0b10010],
+        'L':[0b10000,0b10000,0b10000,0b10000,0b11111],
+        'M':[0b10001,0b11011,0b10101,0b10001,0b10001],
+        'N':[0b10001,0b11001,0b10101,0b10011,0b10001],
+        'O':[0b01110,0b10001,0b10001,0b10001,0b01110],
+        'P':[0b11110,0b10001,0b11110,0b10000,0b10000],
+        'Q':[0b01110,0b10001,0b10101,0b10010,0b01101],
+        'R':[0b11110,0b10001,0b11110,0b10010,0b10001],
+        'S':[0b01111,0b10000,0b01110,0b00001,0b11110],
+        'T':[0b11111,0b00100,0b00100,0b00100,0b00100],
+        'U':[0b10001,0b10001,0b10001,0b10001,0b01110],
+        'V':[0b10001,0b10001,0b10001,0b01010,0b00100],
+        'W':[0b10001,0b10001,0b10101,0b11011,0b10001],
+        'X':[0b10001,0b01010,0b00100,0b01010,0b10001],
+        'Y':[0b10001,0b01010,0b00100,0b00100,0b00100],
+        'Z':[0b11111,0b00010,0b00100,0b01000,0b11111],
+        '_':[0,0,0,0,0b11111],
+        '#':[0b01010,0b11111,0b01010,0b11111,0b01010]
+    };
+    const MATRIX_ROWS = 7, MATRIX_COLS = 5;
+    const matrixTrack = $('matrixTrack');
+
+    function matrixCharCols(ch) {
+        const g = MATRIX_FONT[ch.toUpperCase()] || MATRIX_FONT[' '];
+        const cols = [];
+        for (let c = 0; c < MATRIX_COLS; c++) {
+            const col = [];
+            for (let r = 0; r < MATRIX_ROWS; r++) {
+                if (r === 0 || r === 6) { col.push(false); continue; }
+                col.push(!!(g[r - 1] & (1 << (4 - c))));
+            }
+            cols.push(col);
+        }
+        // spacer column between characters
+        cols.push(new Array(MATRIX_ROWS).fill(false));
+        return cols;
+    }
+
+    function updateMarquee(text) {
+        if (!matrixTrack) return;
+        const allCols = [];
+        for (const ch of text) {
+            allCols.push(...matrixCharCols(ch));
+        }
+        // duplicate for seamless loop
+        const full = [...allCols, ...allCols];
+        let html = '';
+        full.forEach(col => {
+            html += '<div class="matrix-col">';
+            col.forEach(on => {
+                html += '<div class="matrix-dot' + (on ? ' on' : '') + '"></div>';
+            });
+            html += '</div>';
+        });
+        matrixTrack.innerHTML = html;
+        const totalW = full.length * 6; // 4px dot + 2px gap
+        matrixTrack.style.width = totalW + 'px';
+        matrixTrack.style.animationDuration = (allCols.length * 6 / 40) + 's';
+    }
+
+    // Default marquee text
+    updateMarquee('   CPG_BEATS   ---   PRODUCER   ---   ');
+
+    // ══════════════════════════════════════
+    // AUDIO EFFECTS (rocker switches)
+    // ══════════════════════════════════════
+    let fxNodes = null; // will be initialized in initAudio
+    const fxState = { lofi: false, bass: false, vinyl: false, slow: false, reverb: false, mono: false };
+
+    function createReverbIR(ctx, duration, decay) {
+        const rate = ctx.sampleRate;
+        const length = rate * duration;
+        const impulse = ctx.createBuffer(2, length, rate);
+        for (let ch = 0; ch < 2; ch++) {
+            const data = impulse.getChannelData(ch);
+            for (let i = 0; i < length; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+            }
+        }
+        return impulse;
+    }
+
+    function initFxNodes() {
+        if (!audioCtx) return;
+
+        // LO-FI: lowpass filter
+        const lofi = audioCtx.createBiquadFilter();
+        lofi.type = 'lowpass';
+        lofi.frequency.value = 3000;
+        lofi.Q.value = 0.7;
+
+        // BASS+: peaking EQ at 80Hz
+        const bass = audioCtx.createBiquadFilter();
+        bass.type = 'peaking';
+        bass.frequency.value = 80;
+        bass.gain.value = 12;
+        bass.Q.value = 1.0;
+
+        // REVERB: convolver with generated IR
+        const reverb = audioCtx.createConvolver();
+        reverb.buffer = createReverbIR(audioCtx, 2.0, 2.5);
+        const reverbWet = audioCtx.createGain();
+        reverbWet.gain.value = 0.35;
+        const reverbDry = audioCtx.createGain();
+        reverbDry.gain.value = 1.0;
+
+        // MONO: channel splitter/merger to sum L+R
+        const monoSplitter = audioCtx.createChannelSplitter(2);
+        const monoMerger = audioCtx.createChannelMerger(2);
+        const monoGainL = audioCtx.createGain();
+        monoGainL.gain.value = 0.5;
+        const monoGainR = audioCtx.createGain();
+        monoGainR.gain.value = 0.5;
+
+        // VINYL: crackle noise source (created on toggle)
+        // We keep a reference holder
+        const vinylGain = audioCtx.createGain();
+        vinylGain.gain.value = 0.06;
+        const vinylFilter = audioCtx.createBiquadFilter();
+        vinylFilter.type = 'highpass';
+        vinylFilter.frequency.value = 800;
+
+        fxNodes = {
+            lofi,
+            bass,
+            reverb, reverbWet, reverbDry,
+            monoSplitter, monoMerger, monoGainL, monoGainR,
+            vinylGain, vinylFilter,
+            vinylSource: null
+        };
+    }
+
+    function rebuildFxChain() {
+        if (!audioCtx || !fxNodes) return;
+        // Disconnect analyser output and rebuild chain
+        // Chain: analyser → [effects] → gainNode → destination
+        try { analyser.disconnect(); } catch(e) {}
+        try { fxNodes.lofi.disconnect(); } catch(e) {}
+        try { fxNodes.bass.disconnect(); } catch(e) {}
+        try { fxNodes.reverb.disconnect(); } catch(e) {}
+        try { fxNodes.reverbWet.disconnect(); } catch(e) {}
+        try { fxNodes.reverbDry.disconnect(); } catch(e) {}
+        try { fxNodes.monoSplitter.disconnect(); } catch(e) {}
+        try { fxNodes.monoMerger.disconnect(); } catch(e) {}
+        try { fxNodes.monoGainL.disconnect(); } catch(e) {}
+        try { fxNodes.monoGainR.disconnect(); } catch(e) {}
+
+        // Build chain: start from analyser, end at gainNode
+        let currentNode = analyser;
+
+        if (fxState.lofi) {
+            currentNode.connect(fxNodes.lofi);
+            currentNode = fxNodes.lofi;
+        }
+        if (fxState.bass) {
+            currentNode.connect(fxNodes.bass);
+            currentNode = fxNodes.bass;
+        }
+        if (fxState.reverb) {
+            // Parallel dry/wet
+            currentNode.connect(fxNodes.reverbDry);
+            currentNode.connect(fxNodes.reverb);
+            fxNodes.reverb.connect(fxNodes.reverbWet);
+            if (fxState.mono) {
+                fxNodes.reverbDry.connect(fxNodes.monoSplitter);
+                fxNodes.reverbWet.connect(fxNodes.monoSplitter);
+            } else {
+                fxNodes.reverbDry.connect(gainNode);
+                fxNodes.reverbWet.connect(gainNode);
+            }
+            if (!fxState.mono) {
+                return; // chain complete
+            }
+            // mono processes after reverb merge — handled below
+            currentNode = fxNodes.monoSplitter;
+            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 0);
+            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 1);
+            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 0);
+            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 1);
+            fxNodes.monoMerger.connect(gainNode);
+            return;
+        }
+        if (fxState.mono) {
+            currentNode.connect(fxNodes.monoSplitter);
+            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 0);
+            fxNodes.monoSplitter.connect(fxNodes.monoGainL, 1);
+            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 0);
+            fxNodes.monoGainL.connect(fxNodes.monoMerger, 0, 1);
+            fxNodes.monoMerger.connect(gainNode);
+            return;
+        }
+
+        // Default: direct connection
+        currentNode.connect(gainNode);
+    }
+
+    function toggleFx(name) {
+        fxState[name] = !fxState[name];
+        if (!audioCtx || !fxNodes) return;
+
+        if (name === 'slow') {
+            audio.playbackRate = fxState.slow ? 0.85 : (transportMode === 'ff' ? TAPE_FF_RATE : 1.0);
+            return;
+        }
+        if (name === 'vinyl') {
+            if (fxState.vinyl) {
+                // Start crackle noise
+                const bufSize = 2 * audioCtx.sampleRate;
+                const noiseBuf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+                const data = noiseBuf.getChannelData(0);
+                for (let i = 0; i < bufSize; i++) {
+                    data[i] = (Math.random() > 0.97 ? (Math.random() * 2 - 1) : 0) * 0.5;
+                    // add subtle continuous crackle
+                    if (Math.random() > 0.8) data[i] += (Math.random() * 2 - 1) * 0.1;
+                }
+                const src = audioCtx.createBufferSource();
+                src.buffer = noiseBuf;
+                src.loop = true;
+                src.connect(fxNodes.vinylFilter);
+                fxNodes.vinylFilter.connect(fxNodes.vinylGain);
+                fxNodes.vinylGain.connect(gainNode);
+                src.start();
+                fxNodes.vinylSource = src;
+            } else {
+                // Stop crackle
+                if (fxNodes.vinylSource) {
+                    try { fxNodes.vinylSource.stop(); } catch(e) {}
+                    fxNodes.vinylSource = null;
+                }
+                try { fxNodes.vinylGain.disconnect(); } catch(e) {}
+            }
+            return;
+        }
+
+        // For lofi, bass, reverb, mono — rebuild the chain
+        rebuildFxChain();
+    }
+
     // ── Canvas resize ──
     function sizeCanvas(cvs) {
         const dpr = devicePixelRatio;
@@ -210,6 +476,10 @@
         gainNode.connect(audioCtx.destination);
         freqData = new Uint8Array(analyser.frequencyBinCount);
         timeData = new Float32Array(analyser.fftSize);
+
+        // Initialize audio effects nodes
+        initFxNodes();
+
         loadPeaks();
     }
 
@@ -807,7 +1077,7 @@
     function transportPlay() {
         if (transportMode === 'ff') {
             // Return from FF to normal speed
-            audio.playbackRate = 1.0;
+            audio.playbackRate = fxState.slow ? 0.85 : 1.0;
             transportMode = 'playing';
             isPlaying = true;
             stopMotorSound();
@@ -816,7 +1086,7 @@
         }
         stopRewind();
         if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        audio.playbackRate = 1.0;
+        audio.playbackRate = fxState.slow ? 0.85 : 1.0;
         audio.play();
         isPlaying = true;
         transportMode = 'playing';
@@ -827,7 +1097,7 @@
         if (transportMode === 'ff' || transportMode === 'rew') {
             // First stop FF/REW, then pause
             stopRewind();
-            audio.playbackRate = 1.0;
+            audio.playbackRate = fxState.slow ? 0.85 : 1.0;
         }
         if (transportMode === 'paused') {
             // Unpause → play
@@ -844,7 +1114,7 @@
         stopRewind();
         audio.pause();
         audio.currentTime = 0;
-        audio.playbackRate = 1.0;
+        audio.playbackRate = fxState.slow ? 0.85 : 1.0;
         isPlaying = false;
         transportMode = 'stopped';
         updateTransportUI();
@@ -912,7 +1182,7 @@
     audio.addEventListener('ended', () => {
         stopRewind();
         isPlaying = false;
-        audio.playbackRate = 1.0;
+        audio.playbackRate = fxState.slow ? 0.85 : 1.0;
         transportMode = 'stopped';
         updateTransportUI();
     });
@@ -967,6 +1237,19 @@
         }
     });
 
+    // ── Rocker Switches (Audio FX) ──
+    document.querySelectorAll('.switch-unit').forEach(unit => {
+        const housing = unit.querySelector('.switch-housing');
+        const swLed = unit.querySelector('.switch-led');
+        const fxName = unit.dataset.fx;
+        if (!housing || !fxName) return;
+        housing.addEventListener('click', () => {
+            housing.classList.toggle('on');
+            swLed.classList.toggle('on');
+            toggleFx(fxName);
+        });
+    });
+
     // ── Sliders ──
     sldRes.addEventListener('input', () => {
         resolution = +sldRes.value; vR.textContent = resolution;
@@ -998,6 +1281,12 @@
         if (grid[2]) grid[2].textContent = beat.type || '--';
         if (grid[3]) grid[3].textContent = 'MP3';
         if (grid[4]) grid[4].textContent = '320 KBPS';
+
+        // Update LED dot matrix marquee
+        const marqueeText = '   ' + (beat.title || 'CPG_BEATS').toUpperCase() +
+            '   ---   ' + (beat.bpm || '--') + ' BPM   ---   ' +
+            (beat.key || '') + '   ---   ';
+        updateMarquee(marqueeText);
 
         // Update active state in list
         document.querySelectorAll('.beat-item').forEach(el => {

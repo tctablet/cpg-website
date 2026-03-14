@@ -22,6 +22,14 @@
 
     <div class="wood-frame">
         <div id="app" class="hidden">
+            <div class="mod matrix-mod">
+                <div class="matrix-housing">
+                    <div class="matrix-viewport">
+                        <div class="matrix-track" id="matrixTrack"></div>
+                    </div>
+                </div>
+            </div>
+
             <header class="hdr">
                 <span class="led" id="led"></span>
                 <span class="hdr-brand">CPG_BEATS</span>
@@ -114,6 +122,48 @@
                 </div>
                 <div class="mod-canvas spec-cv">
                     <canvas id="specCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="mod switch-mod">
+                <div class="mod-head">
+                    <span class="mod-title">PROCESSOR</span>
+                    <span class="hdr-spacer"></span>
+                    <span class="mod-info">AUDIO FX</span>
+                </div>
+                <div class="mod-body">
+                    <div class="switches-row">
+                        <div class="switch-unit" data-fx="lofi">
+                            <div class="switch-led"></div>
+                            <div class="switch-housing"><div class="switch-rocker"></div></div>
+                            <div class="switch-label">LO-FI</div>
+                        </div>
+                        <div class="switch-unit" data-fx="bass">
+                            <div class="switch-led"></div>
+                            <div class="switch-housing"><div class="switch-rocker"></div></div>
+                            <div class="switch-label">BASS+</div>
+                        </div>
+                        <div class="switch-unit" data-fx="vinyl">
+                            <div class="switch-led"></div>
+                            <div class="switch-housing"><div class="switch-rocker"></div></div>
+                            <div class="switch-label">VINYL</div>
+                        </div>
+                        <div class="switch-unit" data-fx="slow">
+                            <div class="switch-led"></div>
+                            <div class="switch-housing"><div class="switch-rocker"></div></div>
+                            <div class="switch-label">SLOW</div>
+                        </div>
+                        <div class="switch-unit" data-fx="reverb">
+                            <div class="switch-led"></div>
+                            <div class="switch-housing"><div class="switch-rocker"></div></div>
+                            <div class="switch-label">REVERB</div>
+                        </div>
+                        <div class="switch-unit" data-fx="mono">
+                            <div class="switch-led"></div>
+                            <div class="switch-housing"><div class="switch-rocker"></div></div>
+                            <div class="switch-label">MONO</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

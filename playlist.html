@@ -774,7 +774,7 @@
                 inset 0 -1px 0 rgba(0,0,0,0.3);
             transform: translateY(-4px);
             transition: transform 80ms ease, background 0.15s;
-            color: #ddd;
+            color: var(--beat-color, #E8879A);
         }
         .deck-btn:hover .btn-face {
             background: linear-gradient(180deg, #909098, #7a7a82, #6a6a72);
@@ -808,15 +808,7 @@
             align-items: center;
             gap: 4px;
         }
-        .deck-btn-label {
-            font-size: 8px;
-            letter-spacing: 1px;
-            color: var(--beat-color, #E8879A);
-            text-transform: uppercase;
-            transition: color 0.3s;
-        }
-        .deck-btn.rated-up ~ .deck-btn-label { color: #90ee90; }
-        .deck-btn.rated-down ~ .deck-btn-label { color: #ff9090; }
+        .deck-btn-label { display: none; }
 
         /* Transport icons */
         .d-icon { display: flex; align-items: center; justify-content: center; }

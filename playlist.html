@@ -1141,14 +1141,16 @@
            RESPONSIVE
            ══════════════════════════════════════ */
         @media (max-width: 500px) {
-            .player-wrap { gap: 4px; padding: 0; }
-            .btn-face { width: 44px; height: 34px; }
-            .deck-housing { padding: 10px 10px; gap: 6px; }
-            .deck-buttons { gap: 2px; }
-            .beat-dot { height: 22px; }
-            .dot-num { font-size: 8px; }
-            .beat-overview { gap: 6px; }
+            #playerScreen { padding: 6px 2px; }
+            .player-wrap { gap: 4px; padding: 0; max-width: 100%; }
+            .btn-face { width: 52px; height: 40px; }
+            .deck-housing { padding: 12px 8px; gap: 4px; justify-content: center; }
+            .deck-buttons { gap: 3px; justify-content: center; flex: 1; }
+            .deck-led-group { display: none; }
             .deck-counter { display: none; }
+            .beat-dot { height: 26px; }
+            .dot-num { font-size: 9px; }
+            .beat-overview { gap: 4px; }
             .cassette { width: 200px; height: 128px; }
             .cassette-label { top: 8px; left: 12px; right: 12px; height: 52px; }
             .cassette-label-title { font-size: 13px; }
@@ -1164,25 +1166,25 @@
             .envelope-name { font-size: 1.5rem; }
             .envelope-sub { font-size: 0.6rem; }
             .pl-mod-head { padding: 5px 10px; }
-            .pl-mod-body { padding: 8px 10px; }
-            .pl-mod-title { font-size: 0.6rem; }
+            .pl-mod-body { padding: 6px 8px; }
+            .pl-mod-title { font-size: 0.65rem; }
             .player-header { padding: 6px 10px; }
             .rating-list { max-height: 150px; }
-            .wave-cv { height: 48px; }
+            .wave-cv { height: 55px; }
             .spec-cv { height: 100%; }
             .pl-split { gap: 4px; }
-            .pl-trk-name { font-size: 1.1rem; }
-            .pl-trk-grid { font-size: 9px; }
+            .pl-trk-name { font-size: 1.2rem; }
+            .pl-trk-grid { font-size: 10px; }
+            .d-icon svg, .d-icon { transform: scale(1.15); }
         }
         @media (max-width: 360px) {
-            #playerScreen { padding: 8px 4px; }
+            #playerScreen { padding: 4px 2px; }
             .player-wrap { gap: 3px; }
-            .beat-dot { height: 20px; }
+            .beat-dot { height: 24px; }
             .dot-num { font-size: 8px; }
-            .beat-overview { gap: 4px; }
-            .btn-face { width: 40px; height: 32px; }
-            .deck-housing { padding: 8px 8px; gap: 4px; }
-            .deck-led-group { display: none; }
+            .beat-overview { gap: 3px; }
+            .btn-face { width: 48px; height: 38px; }
+            .deck-housing { padding: 10px 6px; gap: 3px; }
             .player-header { gap: 6px; }
             .pl-brand { font-size: 1rem; }
             .instruct-title { font-size: 1.3rem; margin-bottom: 20px; }
@@ -1192,9 +1194,9 @@
             .done-icon { width: 60px; height: 60px; font-size: 2rem; }
             .rating-list { max-height: 120px; }
             .rating-item { padding: 6px 8px; }
-            .wave-cv { height: 40px; }
+            .wave-cv { height: 48px; }
             .spec-cv { height: 100%; }
-            .pl-trk-name { font-size: 1rem; }
+            .pl-trk-name { font-size: 1.1rem; }
         }
         /* Landscape phones */
         @media (max-height: 500px) and (orientation: landscape) {
@@ -1281,18 +1283,22 @@
             .matrix-viewport { height: 28px; }
             .matrix-dot { width: 3px; height: 3px; }
             .matrix-housing { padding: 4px 8px; }
-            .switch-housing { width: 24px; height: 36px; }
-            .switch-rocker { height: 16px; top: 16px; }
+            .switches-row { gap: 8px; justify-content: center; }
+            .switch-unit { gap: 6px; }
+            .switch-housing { width: 36px; height: 52px; }
+            .switch-rocker { height: 24px; top: 24px; }
             .switch-housing.on .switch-rocker { top: 2px; }
-            .switch-label { font-size: 0.4rem; }
+            .switch-led { width: 7px; height: 7px; }
+            .switch-label { font-size: 0.55rem; }
         }
         @media (max-width: 360px) {
             .matrix-mod { display: none; }
-            .switch-housing { width: 22px; height: 32px; }
-            .switch-rocker { height: 14px; top: 14px; }
+            .switches-row { gap: 6px; }
+            .switch-housing { width: 32px; height: 46px; }
+            .switch-rocker { height: 20px; top: 22px; }
             .switch-housing.on .switch-rocker { top: 2px; }
-            .switches-row { gap: 3px; }
-            .switch-unit { gap: 3px; }
+            .switch-unit { gap: 4px; }
+            .switch-label { font-size: 0.5rem; }
         }
     </style>
 </head>

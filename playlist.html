@@ -1702,11 +1702,9 @@
         if (!peaks.length) return;
 
         const bars = resolution;
-        const bw = w / bars;
-        const gap = Math.max(0.5, bw * 0.15);
-        const bw2 = bw - gap;
         const prog = audio.duration ? audio.currentTime / audio.duration : 0;
         const ppb = peaks.length / bars;
+        const gap = 1;
 
         for (let i = 0; i < bars; i++) {
             let pk = 0;
@@ -1715,12 +1713,14 @@
             for (let j = s; j < e && j < peaks.length; j++) {
                 if (peaks[j] > pk) pk = peaks[j];
             }
+            const x = Math.round(i * w / bars);
+            const x2 = Math.round((i + 1) * w / bars);
+            const barW = x2 - x - gap;
             const bh = pk * h * 0.88;
-            const x = i * bw + gap / 2;
             const y = (h - bh) / 2;
             const played = (i / bars) < prog;
             wCtx.fillStyle = played ? '#8ab4c4' : '#444';
-            wCtx.fillRect(x, y, Math.max(0.5, bw2), bh);
+            wCtx.fillRect(x, y, Math.max(1, barW), bh);
         }
 
         if (audio.duration) {
